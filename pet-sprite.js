@@ -1,10 +1,13 @@
 // Original Pearlfin artwork, animated from lossless sprite strips. No WebGL.
 const CELL = { width: 192, height: 208 };
 const TIMING = {
-  idle: [1050, 400, 110, 140, 400, 900], // 3-second breathing/blink cycle
-  wave: [230, 220, 280, 270],
-  jump: [140, 130, 180, 150, 200],
+  idle: { frames: [0, 1, 2, 3, 4, 5], delays: [1100, 390, 100, 110, 450, 850] },
+  wave: { frames: [0, 1, 2, 1, 2, 1, 3], delays: [180, 130, 130, 130, 130, 150, 350] },
+  jump: { frames: [0, 1, 2, 3, 4], delays: [130, 140, 190, 160, 220] },
 };
+const NEUTRAL_LOOK = 2;
+const LOOK_DELAY = 150;
+const LOOK_STEP = 80;
 const ASSETS = new URL('./assets/pearlfin/', import.meta.url);
 
 export function lookDirection(dx, dy) {
@@ -36,8 +39,9 @@ export function createSpritePet(doc = document, win = window) {
   let epoch = 0;
   let kind = 'neutral';
   let lastGesture = -Infinity;
-  let lastLook = -Infinity;
-  let lastDirection = -1;
+  let lookDebounce = null;
+  let pendingLook = -1;
+  let lookPosition = NEUTRAL_LOOK;
   let observer;
   try { hidden = win.sessionStorage.getItem('fishcat-hidden') === '1'; } catch { /* Private browsing. */ }
 
@@ -51,6 +55,9 @@ export function createSpritePet(doc = document, win = window) {
     epoch += 1;
     if (timer !== null) win.clearTimeout(timer);
     timer = null;
+    if (lookDebounce !== null) win.clearTimeout(lookDebounce);
+    lookDebounce = null;
+    pendingLook = -1;
   }
   function neutral() {
     kind = 'neutral';
@@ -79,21 +86,22 @@ export function createSpritePet(doc = document, win = window) {
   }
   function sequence(name) {
     cancel();
-    lastDirection = -1;
+    lookPosition = NEUTRAL_LOOK;
     if (!allowed()) { neutral(); return; }
     const ticket = epoch;
     kind = name;
     load(name).then(image => {
       if (ticket !== epoch || !allowed()) return;
       let frame = 0;
+      const timeline = TIMING[name];
       const step = () => {
         if (ticket !== epoch || !allowed()) return;
-        draw(image, frame, name);
-        const delay = TIMING[name][frame];
+        draw(image, timeline.frames[frame], name);
+        const delay = timeline.delays[frame];
         frame += 1;
         timer = win.setTimeout(() => {
           timer = null;
-          if (frame < TIMING[name].length) step();
+          if (frame < timeline.frames.length) step();
           else if (name === 'idle') { frame = 0; step(); }
           else sequence('idle');
         }, delay);
@@ -110,6 +118,7 @@ export function createSpritePet(doc = document, win = window) {
     neutral();
     dock.hidden = hidden;
     show.hidden = !hidden;
+    dock.dataset.motion = allowed() ? 'allowed' : 'stopped';
     motion.textContent = paused ? '▷' : 'Ⅱ';
     motion.setAttribute('aria-label', paused ? 'Resume Pearlfin animation' : 'Pause Pearlfin animation');
     motion.title = paused ? 'Resume animation' : 'Pause animation';
@@ -128,12 +137,13 @@ export function createSpritePet(doc = document, win = window) {
     const jump = now - lastGesture < 650 || kind === 'wave';
     lastGesture = now;
     announce(!allowed() ? 'Pearlfin says hello! Animation is paused.' : jump ? 'Pearlfin does a happy little jump!' : 'Pearlfin says hello!');
-    if (allowed()) sequence(jump ? 'jump' : 'wave');
+    // Let an in-flight hop finish instead of stuttering on repeated clicks.
+    if (allowed() && kind !== 'jump') sequence(jump ? 'jump' : 'wave');
   }
   on(play, 'click', hello); // Native button supports Enter, Space, and touch.
   on(play, 'keydown', event => { if (event.repeat && (event.key === 'Enter' || event.key === ' ')) event.preventDefault(); });
   on(hide, 'click', () => { setHidden(true); show.focus({ preventScroll: true }); });
-  on(show, 'click', () => { setHidden(false); play.focus({ preventScroll: true }); });
+  on(show, 'click', () => { setHidden(false); play.focus(); });
   on(motion, 'click', () => {
     paused = !paused;
     reconcile();
@@ -161,28 +171,55 @@ export function createSpritePet(doc = document, win = window) {
     on(win, 'scroll', checkVisible, { passive: true });
     on(win, 'resize', checkVisible, { passive: true });
   }
-  // Look poses load only while a mouse is over the companion, at most 12 times/s.
+  // Debounce passing pointers, then step only through existing adjacent poses.
+  function startLook(target, returnToIdle = false) {
+    cancel();
+    if (!allowed()) return;
+    const ticket = epoch;
+    kind = 'look';
+    const step = () => {
+      if (ticket !== epoch || !allowed()) return;
+      const distance = (target - lookPosition + 16) % 16;
+      const next = distance === 0 ? target : (lookPosition + (distance <= 8 ? 1 : 15)) % 16;
+      const name = next < 8 ? 'look-up' : 'look-down';
+      load(name).then(image => {
+        if (ticket !== epoch || !allowed()) return;
+        lookPosition = next;
+        draw(image, next % 8, 'look');
+        if (next !== target || returnToIdle) {
+          timer = win.setTimeout(() => {
+            timer = null;
+            if (ticket !== epoch || !allowed()) return;
+            if (next === target) sequence('idle');
+            else step();
+          }, next === target ? 120 : LOOK_STEP);
+        }
+      }).catch(() => { if (ticket === epoch) sequence('idle'); });
+    };
+    step();
+  }
+  function stopLooking() {
+    if (lookDebounce !== null) win.clearTimeout(lookDebounce);
+    lookDebounce = null;
+    pendingLook = -1;
+    if (kind === 'look') startLook(NEUTRAL_LOOK, true);
+  }
   on(play, 'pointermove', event => {
     if (event.pointerType !== 'mouse' || !allowed() || kind === 'wave' || kind === 'jump') return;
-    const now = win.performance.now();
-    if (now - lastLook < 85) return;
     const rect = play.getBoundingClientRect();
     const dx = event.clientX - rect.left - rect.width / 2;
     const dy = event.clientY - rect.top - rect.height / 2;
-    if (Math.hypot(dx, dy) < rect.width * .12) return;
-    const direction = lookDirection(dx, dy);
-    if (direction === lastDirection) return;
-    lastLook = now;
-    lastDirection = direction;
-    cancel();
-    kind = 'look';
-    const ticket = epoch;
-    const name = direction < 8 ? 'look-up' : 'look-down';
-    load(name).then(image => {
-      if (ticket === epoch && allowed()) draw(image, direction % 8, 'look');
-    }).catch(() => { if (ticket === epoch) sequence('idle'); });
+    if (Math.hypot(dx, dy) < rect.width * .16) { stopLooking(); return; }
+    const target = lookDirection(dx, dy);
+    if (target === pendingLook || (kind === 'look' && target === lookPosition)) return;
+    if (lookDebounce !== null) win.clearTimeout(lookDebounce);
+    pendingLook = target;
+    lookDebounce = win.setTimeout(() => {
+      lookDebounce = null;
+      startLook(target);
+    }, LOOK_DELAY);
   });
-  on(play, 'pointerleave', () => { if (kind === 'look') sequence('idle'); });
+  on(play, 'pointerleave', stopLooking);
   if (ctx) play.append(canvas);
   motion.hidden = !ctx;
   hide.hidden = false;
@@ -196,6 +233,7 @@ export function createSpritePet(doc = document, win = window) {
       observer?.disconnect();
       removers.forEach(remove => remove());
       neutral();
+      dock.dataset.motion = 'stopped';
       canvas.remove();
     },
   };

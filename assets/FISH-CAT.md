@@ -13,6 +13,8 @@ The homepage uses the owner's original Pearlfin animation artwork. These are pre
 
 Every strip preserves the final source sheet's decoded RGBA pixels exactly, verified after lossless WebP encoding. The source cells are 192 × 208 pixels. `assets/pearlfin/manifest.json` records dimensions and hashes.
 
+No visible caption is placed beneath the pet. Pause and hide remain small, labeled icons. The original sparse frames use timed action sequences plus at most 1.5 px of compositor-only idle floating; no frame blending or generated in-between artwork is used.
+
 Click, Enter, or Space says hello. Click again during the greeting to jump. Moving the mouse over the companion selects its original directional poses. Pause and hide controls are explicit; the hide preference lasts for the browser session. Reduced-motion starts static. Animation stops offscreen and in background tabs, and pending image loads cannot restart it after pause or hide.
 
 Only the neutral image and, when allowed, the idle strip are initially requested (about 221 KB total). Other strips are loaded lazily. No external CDN, tracking, or account connection is used. The former experimental 3D assets are not imported by the current homepage; they remain available for old cached pages.

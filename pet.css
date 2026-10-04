@@ -13,17 +13,36 @@
 .pet-hide[hidden], .pet-motion[hidden] { display: none; }
 .pet-hide { position: absolute; top: 3px; right: 0; width: 32px; height: 32px; color: #687279; font: 20px/1 system-ui; background: var(--paper); border: 1px solid transparent; border-radius: 50%; cursor: pointer; }
 .pet-hide:hover { border-color: var(--line); }
-.pet-caption { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: -7px; font: 10px/1.5 system-ui, sans-serif; }
-.pet-name { color: #59656d; letter-spacing: .12em; font-size: 11px; }
-.pet-hint { color: #6b7279; }
-.pet-motion { color: #687279; background: none; border: 0; width: 28px; height: 28px; padding: 0; cursor: pointer; font-size: 11px; }
+.pet-motion { position: absolute; top: 3px; left: 0; color: #687279; background: var(--paper); border: 1px solid transparent; border-radius: 50%; width: 32px; height: 32px; padding: 0; cursor: pointer; font: 11px/1 system-ui; opacity: .7; }
+.pet-motion:hover { opacity: 1; border-color: var(--line); }
 .pet-status { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .pet-show { border: 0; padding: 4px 0 4px 12px; background: none; color: var(--muted); font: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 @media (min-width: 1420px) { .pet-dock { position: fixed; bottom: 26px; right: 20px; width: 190px; margin: 0; z-index: 2; } }
-@media (max-width: 680px) { .pet-dock { width: 110px; margin: 15px 0 -10px -15px; } .pet-hide { top: -3px; right: 0; width: 30px; height: 30px; } .pet-caption { gap: 4px; margin-top: -4px; } .pet-hint { display: none; } }
+@media (max-width: 680px) { .pet-dock { width: 110px; margin: 15px 0 -10px -15px; } .pet-hide, .pet-motion { top: -3px; width: 30px; height: 30px; } }
 @media (max-width: 380px) { .profile-aside { grid-row: 1; display: flex; align-items: center; justify-content: space-between; } .pet-dock { margin: -12px 0; } }
 @media print { .pet-dock, .pet-show { display: none !important; } }
 
 @media (prefers-reduced-motion: reduce) { .pet-dock *, .pet-dock *::before, .pet-dock *::after { animation: none !important; transition: none !important; } }
 
-.pet-dock:not([data-enhanced="true"]) .pet-hint { display: none; }
+
+/* Only a single pet image is ever visible. Motion adds no blended ghost frames. */
+.pet-play { transform-origin: 50% 65%; }
+.pet-dock[data-motion="allowed"][data-state="idle"] .pet-play { animation: pearlfin-float 4.8s ease-in-out infinite; }
+.pet-dock[data-motion="allowed"][data-state="wave"] .pet-play { animation: pearlfin-wave 1.2s ease-in-out both; }
+.pet-dock[data-motion="allowed"][data-state="jump"] .pet-play { animation: pearlfin-hop .84s ease-in-out both; }
+.pet-dock:not([data-motion="allowed"]) .pet-play { animation: none; transform: none; }
+@keyframes pearlfin-float {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0); }
+  35% { transform: translate3d(0, -1.5px, 0) rotate(-.3deg); }
+  70% { transform: translate3d(0, -.4px, 0) rotate(.3deg); }
+}
+@keyframes pearlfin-wave {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0); }
+  30%, 65% { transform: translate3d(0, -1px, 0) rotate(-.4deg); }
+}
+@keyframes pearlfin-hop {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  15% { transform: translate3d(0, 1px, 0); }
+  44% { transform: translate3d(0, -4px, 0); }
+  78% { transform: translate3d(0, .5px, 0); }
+}
