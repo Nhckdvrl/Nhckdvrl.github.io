@@ -2,8 +2,29 @@
 <html lang="en" data-theme="light">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Kirakira Agent and ShopAgent RL: multi-channel agent runtime engineering, supervised fine-tuning, online reinforcement learning, and evaluation infrastructure.">
   <title>Projects — Xiang Ding</title>
   <link rel="stylesheet" href="./style.css?v=20261004c"><script defer src="./script.js"></script>
+  <style>
+    .project-case { grid-template-columns: 32px minmax(0, 1fr) 116px; gap: 22px; padding-block: 34px; color: var(--ink); }
+    .project-case:hover h2 { text-decoration: none; }
+    .project-case h2 a { color: inherit; text-decoration: none; }
+    .project-case h2 a:hover { text-decoration: underline; }
+    .project-case .project-body > p { font-size: 15px; line-height: 1.75; }
+    .project-features { margin: 21px 0 20px; padding-left: 19px; color: var(--muted); font-size: 14px; line-height: 1.75; }
+    .project-features li { padding-left: 3px; margin-bottom: 12px; }
+    .project-features strong { color: var(--ink); font-weight: 600; }
+    .project-case .project-note { border-left: 2px solid var(--line); padding-left: 13px; font-size: 12px !important; margin-top: 19px !important; }
+    .project-links { display: flex; flex-wrap: wrap; gap: 9px 20px; font-size: 12px; }
+    .project-links a { text-decoration: none; }
+    .project-links a:hover { text-decoration: underline; }
+    .project-case .project-side { gap: 3px; padding-top: 3px; }
+    @media (max-width: 680px) {
+      .project-case { grid-template-columns: 24px minmax(0, 1fr); gap: 12px; padding-block: 28px; }
+      .project-case .project-side { flex-wrap: wrap; gap: 4px 13px; }
+      .project-features { padding-left: 17px; }
+    }
+  </style>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -17,30 +38,54 @@
   <section class="page-hero wrap reveal">
     <p class="eyebrow">Projects / things I build</p>
     <h1>Selected projects</h1>
-    <p class="page-lead">Two projects spanning agent runtime engineering and end-to-end agent training: building systems that run continuously, and training agents to act through interaction.</p>
+    <p class="page-lead">Agent systems and learning infrastructure: a multi-channel assistant runtime, and a shopping-agent training pipeline built around executable environments.</p>
   </section>
 
-  <section class="wrap project-catalog">
-    <a class="project-row" href="https://github.com/Nhckdvrl/kirakira-agent" target="_blank" rel="noreferrer">
-      <div class="project-number">01</div>
-      <div>
-        <p class="mono accent">AGENT RUNTIME</p>
-        <h2>Kirakira Agent</h2>
-        <p>A local-first, continuously running, multi-channel agent runtime. Passive conversation, proactive execution, and background work share tools and long-term memory, with plugins and MCP for extensibility.</p>
-        <p>SQLite-backed sessions and persisted execution traces make runtime behavior inspectable.</p>
+  <section class="wrap project-catalog" aria-label="Selected engineering projects">
+    <article class="project-row project-case" id="kirakira-agent" aria-labelledby="kirakira-title">
+      <div class="project-number" aria-hidden="true">01</div>
+      <div class="project-body">
+        <p class="mono">AGENT RUNTIME</p>
+        <h2 id="kirakira-title"><a href="https://github.com/Nhckdvrl/kirakira-agent">Kirakira Agent ↗</a></h2>
+        <p>A local-first Python assistant runtime connecting conversation, proactive messaging, and skill-driven background work across Web, Telegram, and QQ. Models use configurable OpenAI-compatible endpoints; sessions and runtime state live in a local workspace.</p>
+        <ul class="project-features">
+          <li><strong>Shared execution and recovery.</strong> Chat, proactive decisions, and background skills use one ReAct execution core with scoped tool grants. Tool intent is recorded before execution; unresolved side effects are flagged for reconciliation after a restart.</li>
+          <li><strong>Proactive decision checks.</strong> Explicit share/skip tools bind decisions to candidate IDs. Conversation, rule, and source-revision checks reject stale decisions before delivery.</li>
+          <li><strong>Memory and context.</strong> Append-only conversation history is separate from rolling context compaction. The selectable Akasha v1 memory path learns from committed turns, with a shared transactional cycle for live ingestion and offline replay.</li>
+          <li><strong>Plugin and MCP lifecycle.</strong> Staged publication and generation leases keep in-flight turns on their original tool snapshot while new plugin and MCP configurations are prepared and validated.</li>
+        </ul>
+        <div class="project-links" aria-label="Kirakira implementation references">
+          <a href="https://github.com/Nhckdvrl/kirakira-agent/blob/40c4277d5d01c6bc5843593a2d6679683126c8b1/agent/core/execution.py">Execution journal ↗</a>
+          <a href="https://github.com/Nhckdvrl/kirakira-agent/blob/40c4277d5d01c6bc5843593a2d6679683126c8b1/proactive_v2/loop.py#L420-L431">Decision checks ↗</a>
+          <a href="https://github.com/Nhckdvrl/kirakira-agent/blob/40c4277d5d01c6bc5843593a2d6679683126c8b1/plugins/akasha/cycle.py">Memory cycle ↗</a>
+          <a href="https://github.com/Nhckdvrl/kirakira-agent/blob/40c4277d5d01c6bc5843593a2d6679683126c8b1/agent/plugins/generation.py">Plugin lifecycle ↗</a>
+        </div>
+        <p class="project-note">The <a href="https://github.com/Nhckdvrl/kirakira-agent/blob/40c4277d5d01c6bc5843593a2d6679683126c8b1/docs/engineering/akashic-review-2026-10-02.md">architecture review</a> documents upstream references to Akashic, the retained Akasha v1 algorithm, and the project's own adaptations and remaining boundaries.</p>
       </div>
-      <div class="project-side"><span>Python</span><span>SQLite · MCP</span><b>↗</b></div>
-    </a>
-    <a class="project-row" href="https://github.com/Nhckdvrl/ShopAgent-RL" target="_blank" rel="noreferrer">
-      <div class="project-number">02</div>
-      <div>
-        <p class="mono accent">AGENTIC REINFORCEMENT LEARNING</p>
-        <h2>ShopAgent RL</h2>
-        <p>An end-to-end training pipeline for a Chinese e-commerce shopping agent, combining agentic supervised fine-tuning and online GRPO. The agent learns to clarify requirements, search, compare, and purchase in ShopSimulator.</p>
-        <p>Built on Qwen3.5-4B and veRL, with reproducible environment execution, trajectory filtering, and environment-verified evaluation.</p>
+      <div class="project-side" aria-label="Kirakira technologies"><span>Python · asyncio</span><span>ReAct · MCP</span></div>
+    </article>
+    <article class="project-row project-case" id="shopagent-rl" aria-labelledby="shopagent-title">
+      <div class="project-number" aria-hidden="true">02</div>
+      <div class="project-body">
+        <p class="mono">AGENTIC REINFORCEMENT LEARNING</p>
+        <h2 id="shopagent-title"><a href="https://github.com/Nhckdvrl/ShopAgent-RL">ShopAgent RL ↗</a></h2>
+        <p>A Chinese shopping-agent training pipeline on ShopSimulator, combining Qwen3.5-4B full-parameter supervised fine-tuning with online GRPO in veRL. The agent asks a simulated shopper for missing requirements, then searches and selects products through environment tools.</p>
+        <ul class="project-features">
+          <li><strong>Replay-verified training data.</strong> Teacher trajectories are filtered for successful terminal purchases, invalid actions, exceptions, and split overlap. Retained actions are replayed in the environment to check the resulting purchase.</li>
+          <li><strong>Assistant-only supervision.</strong> A custom Qwen3.5 dataset renders complete conversation prefixes, verifies token-prefix alignment, and masks non-assistant tokens from the SFT loss. Overlength examples are rejected rather than silently truncated.</li>
+          <li><strong>Multi-turn online RL.</strong> A custom veRL tool loop runs concurrent rollouts with isolated episode sessions in a shared simulator world. It ends on simulated purchases and returns environment-derived rewards and diagnostics.</li>
+          <li><strong>Evaluation acceptance checks.</strong> A separate validator checks exact task coverage, duplicates, terminal outcomes, exception rates, and served-model identity. Run reports distinguish infrastructure failures from policy behavior.</li>
+        </ul>
+        <div class="project-links" aria-label="ShopAgent implementation references">
+          <a href="https://github.com/Nhckdvrl/ShopAgent-RL/blob/90c99d156890f880d569891de5b4c486db8471c1/scripts/b12_build_audit_teacher_sft.py">Data audit ↗</a>
+          <a href="https://github.com/Nhckdvrl/ShopAgent-RL/blob/90c99d156890f880d569891de5b4c486db8471c1/shopagent_rl/sft/prefix_mask_dataset.py">SFT loss masks ↗</a>
+          <a href="https://github.com/Nhckdvrl/ShopAgent-RL/blob/90c99d156890f880d569891de5b4c486db8471c1/shopagent_rl/verl/agent_loop.py">GRPO tool loop ↗</a>
+          <a href="https://github.com/Nhckdvrl/ShopAgent-RL/blob/90c99d156890f880d569891de5b4c486db8471c1/scripts/b47_validate_eval_run.py">Evaluation checks ↗</a>
+        </div>
+        <p class="project-note">Experiments use simulated shopping tasks. The <a href="https://github.com/Nhckdvrl/ShopAgent-RL/blob/90c99d156890f880d569891de5b4c486db8471c1/RESULTS.md">results and caveats</a> and <a href="https://github.com/Nhckdvrl/ShopAgent-RL/blob/90c99d156890f880d569891de5b4c486db8471c1/ENGINEERING_LOG.md">engineering log</a> record evaluation failures, fixes, and limitations alongside the reported outcomes.</p>
       </div>
-      <div class="project-side"><span>SFT · GRPO</span><span>veRL</span><b>↗</b></div>
-    </a>
+      <div class="project-side" aria-label="ShopAgent technologies"><span>Qwen3.5-4B</span><span>SFT · GRPO</span><span>veRL · vLLM</span></div>
+    </article>
   </section>
 
 </main>
