@@ -1,17 +1,18 @@
-# Homepage fish-cat
+# Pearlfin homepage companion
 
-An original, procedural 3D interpretation of the supplied white-and-pink fish-cat reference. It is loaded only by `index.html`.
+The homepage uses the owner's original Pearlfin animation artwork. These are pre-rendered animation frames, not a freely rotatable real-time 3D model.
 
-- `pet.js`: deferred loading, session-level hide/show, pause and reduced-motion handling.
-- `fish-cat.js`: Three.js sculpture, painted facial textures, lighting and interactions. Click or press Enter/Space to greet; drag horizontally to turn.
-- `fish-cat-canvas.js`: a small software renderer for the same 3D scene if WebGL is unavailable. Uses smooth vertex lighting, curved UV mapping and a depth buffer.
-- `fish-cat.svg`: final static fallback when neither rendering path can initialize.
-- `pet.css`: reserved profile-column placement on small and medium screens; fixed in the empty page margin from 1420px up.
+## Files
 
-All assets are served by this site. Three.js r169 is vendored from the official npm `three@0.169.0` package; its MIT license is in `vendor/THREE-LICENSE.txt`. No runtime CDN, analytics, remote model request or build step is needed. The original supplied reference photograph is not published.
+- `pet-sprite.js`: small timed-frame Canvas2D controller, with no library or WebGL dependency.
+- `pet.css`: restrained profile-column placement, switching to the empty page margin on wide screens.
+- `assets/pearlfin/neutral.webp`: 32 KB, static fallback that also works without JavaScript.
+- `assets/pearlfin/idle.webp`: six-frame breathing/blink strip, loaded only when motion is allowed and the pet is visible.
+- `assets/pearlfin/wave.webp`, `jump.webp`: greetings and playful jumps, loaded on demand.
+- `assets/pearlfin/look-up.webp`, `look-down.webp`: sixteen directional poses, loaded only on pointer interaction.
 
-Performance: WebGL is capped near 30 fps and DPR 1.75; software rendering is capped at 8 fps and DPR 1.25. Both stop ongoing animation when the companion is hidden, outside the viewport, or the tab is backgrounded. Reduced-motion starts paused, with an explicit resume control. Geometry is intentionally small and self-contained. Private browsing or unavailable sessionStorage is supported.
+Every strip preserves the final source sheet's decoded RGBA pixels exactly, verified after lossless WebP encoding. The source cells are 192 × 208 pixels. `assets/pearlfin/manifest.json` records dimensions and hashes.
 
-Verification: real browser rendering of the software 3D path, greeting, drag, keyboard controls, pause, hide/restore/session persistence, repeated responsive resize, and 336px/404px/desktop layouts; deterministic reduced-motion, offscreen/background, and context-loss/restoration lifecycle tests. WebGL could not be rendered on the test cloud browser because that browser disables GL; it uses the same geometry and textures through Three.js's standard renderer.
+Click, Enter, or Space says hello. Click again during the greeting to jump. Moving the mouse over the companion selects its original directional poses. Pause and hide controls are explicit; the hide preference lasts for the browser session. Reduced-motion starts static. Animation stops offscreen and in background tabs, and pending image loads cannot restart it after pause or hide.
 
-To remove the companion, remove the `pet.css` and `pet.js` references, `.pet-dock` markup, and `.pet-show` footer button from `index.html`. The site's content does not depend on JavaScript.
+Only the neutral image and, when allowed, the idle strip are initially requested (about 221 KB total). Other strips are loaded lazily. No external CDN, tracking, or account connection is used. The former experimental 3D assets are not imported by the current homepage; they remain available for old cached pages.
