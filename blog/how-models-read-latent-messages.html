@@ -130,9 +130,7 @@ p(y)=D_r\bigl(x_r,I(m)\bigr).\end{gathered}</annotation></semantics></math></spa
 <h2 id="section-9">省下 token 以后，账应该怎么算？</h2>
 <p>连续通信最直接的时间机会，是省掉 A 写长消息的串行解码。B 也可能少处理一段文字。但新接口会增加状态提取、转换、压缩、传输和读取的成本。</p>
 <p>一个简化的部署判断是：</p>
-<div class="math-block" tabindex="0" role="region" aria-label="公式，可横向滚动"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mtext>省下的发送端解码与接收端处理时间</mtext><mo>&gt;</mo><mtext>新增的编码、传输、注入与同步时间</mtext><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">\text{省下的发送端解码与接收端处理时间}
-&gt;
-\text{新增的编码、传输、注入与同步时间}.</annotation></semantics></math></span></div>
+<div class="math-block" tabindex="0" role="region" aria-label="公式，可横向滚动"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mtable rowspacing="0.25em" columnalign="center" columnspacing="0em"><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mtext>省下的发送端解码与接收端处理时间</mtext></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mo>&gt;</mo><mtext>新增的编码、传输、注入与同步时间</mtext><mi mathvariant="normal">.</mi></mrow></mstyle></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{gathered}\text{省下的发送端解码与接收端处理时间}\\ &gt; \text{新增的编码、传输、注入与同步时间}.\end{gathered}</annotation></semantics></math></span></div>
 <p>这是单次请求关键路径的整理式，不是普遍速度定理；能够并行的阶段不能机械相加，实际批处理和硬件也会改变各项。跨设备时，还需要考虑消息字节数、可用带宽和同步等待。</p>
 <p>训练和适配则是另一笔生命周期账：如果都折算为相同口径的费用，可以写成“总成本 = 一次性适配费用 + 使用次数 × 每次请求费用”。使用次数越多，适配越可能值得；但训练的 GPU 小时不能直接摊进用户看到的单次请求延迟。</p>
 <p>字节数尤其容易被“token-free”遮住。一个 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>4096</mn></mrow><annotation encoding="application/x-tex">4096</annotation></semantics></math></span> 维 BF16 向量有 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>8192</mn></mrow><annotation encoding="application/x-tex">8192</annotation></semantics></math></span> 字节。它占一个序列位置，不等于它只占一个 token ID 的传输空间。完整 KV 的近似大小则是</p>
