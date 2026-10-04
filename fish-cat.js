@@ -1,5 +1,5 @@
 import * as THREE from './assets/vendor/three.module.min.js';
-import { CanvasPetRenderer } from './fish-cat-canvas.js?v=fishcat2';
+import { CanvasPetRenderer } from './fish-cat-canvas.js?v=fishcat3';
 
 // Original procedural sculpture, interpreted from the supplied fish-cat reference.
 // Geometry, painted face, and lighting are local; no model/CDN/tracking requests.
@@ -113,7 +113,7 @@ export function createFishCat(button, { paused = false, onHello = () => {} } = {
     const c=document.createElement('canvas'); c.width=1024;c.height=640; const ctx=c.getContext('2d');
     ctx.scale(1,1); ctx.lineCap='round'; ctx.lineJoin='round';
     function eye(cx,cy,flip) {
-      ctx.save();ctx.translate(cx,cy);ctx.scale(flip,1);
+      ctx.save();ctx.translate(cx,cy);ctx.scale(flip*1.16,1.16);
       if(expression==='blink' || expression==='happy') {ctx.strokeStyle='#503444';ctx.lineWidth=15;ctx.beginPath();ctx.moveTo(-113,7);ctx.quadraticCurveTo(0,expression==='happy'?-73:20,112,5);ctx.stroke();ctx.restore();return;}
       ctx.beginPath();ctx.moveTo(-111,-65);ctx.bezierCurveTo(-134,-4,-116,124,-54,135);ctx.bezierCurveTo(10,140,86,132,104,78);ctx.bezierCurveTo(127,16,110,-62,69,-81);ctx.closePath();
       ctx.fillStyle='#503040';ctx.fill();
@@ -129,14 +129,14 @@ export function createFishCat(button, { paused = false, onHello = () => {} } = {
     }
     // Soft blush is subtle enough to keep the porcelain body readable.
     for(const x of [169,855]) {const g=ctx.createRadialGradient(x,393,0,x,393,81);g.addColorStop(0,'rgba(244,137,168,.4)');g.addColorStop(1,'rgba(244,137,168,0)');ctx.fillStyle=g;ctx.fillRect(x-82,308,164,170);}
-    eye(287,256,1);eye(751,256,-1);
+    eye(278,287,1);eye(760,287,-1);
     ctx.strokeStyle='#ac767e';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(468,382);ctx.quadraticCurveTo(488,404,512,381);ctx.quadraticCurveTo(534,404,554,381);ctx.stroke();
     const texture=new THREE.CanvasTexture(c);texture.colorSpace=THREE.SRGBColorSpace;texture.anisotropy=Math.min(4,renderer.capabilities.getMaxAnisotropy());return texture;
   }
   const textures={ open:faceTexture('open'), blink:faceTexture('blink'), happy:faceTexture('happy') };
   const faceMat=new THREE.MeshBasicMaterial({map:textures.open,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1});
-  const fg=new THREE.PlaneGeometry(1.74,1.05,software ? 16 : 44,software ? 10 : 32); const pos=fg.attributes.position;
-  for(let i=0;i<pos.count;i++){const x=pos.getX(i)+.05,y=pos.getY(i)-.12;const z=.02+.84*Math.sqrt(Math.max(.01,1-((x-.05)/1.05)**2-((y+.15)/.91)**2));pos.setXYZ(i,x,y,z+.013);}
+  const fg=new THREE.PlaneGeometry(1.74,1.05,software ? 32 : 44,software ? 24 : 32); const pos=fg.attributes.position;
+  for(let i=0;i<pos.count;i++){const x=pos.getX(i)+.05,y=pos.getY(i)-.12;const z=.02+.84*Math.sqrt(Math.max(.01,1-((x-.05)/1.05)**2-((y+.15)/.91)**2));pos.setXYZ(i,x,y,z+.042);}
   fg.computeVertexNormals();const face=new THREE.Mesh(fg,faceMat);pet.add(face);
   // A soft contact shadow gives the floating character a home without a card or backdrop.
   const sc=document.createElement('canvas');sc.width=sc.height=128;const sx=sc.getContext('2d');const grad=sx.createRadialGradient(64,64,2,64,64,61);grad.addColorStop(0,'rgba(78,63,87,.16)');grad.addColorStop(1,'rgba(78,63,87,0)');sx.fillStyle=grad;sx.fillRect(0,0,128,128);
