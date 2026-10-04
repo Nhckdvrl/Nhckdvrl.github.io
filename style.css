@@ -130,3 +130,11 @@ code { font-family: monospace; font-size: .9em; }
 
 .notes-description { font-size: 14px; color: var(--muted); margin: 0; }
 nav a { min-height: 44px; display: inline-flex; align-items: center; }
+
+.directions-heading { margin: 30px 0 0; }
+.prose { overflow-wrap: anywhere; }
+.prose li { margin-bottom: 12px; }
+.equation { overflow-x: auto; padding: 18px; margin: 26px 0; background: #f1f4f3; border-left: 2px solid var(--accent); }
+.equation code { white-space: nowrap; }
+.article-page:lang(zh-CN) .prose { line-height: 1.95; }
+.article-page:lang(zh-CN) h1, .article-page:lang(zh-CN) h2 { font-family: system-ui, sans-serif; font-weight: 550; }

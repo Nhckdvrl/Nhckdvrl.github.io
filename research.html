@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Research — Xiang Ding</title>
-  <link rel="stylesheet" href="./style.css?v=20261004"><script defer src="./script.js"></script>
+  <link rel="stylesheet" href="./style.css?v=20261004b"><script defer src="./script.js"></script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -14,51 +14,26 @@
 </header>
 
 <main id="main" class="inner-page">
-  <section class="page-hero wrap reveal">
-    <p class="eyebrow">Research / questions first</p>
+  <section class="page-hero wrap">
+    <p class="eyebrow">Research</p>
     <h1>Research</h1>
-    <p class="page-lead">I care more about mechanisms and reproducible phenomena than attaching a method to a benchmark. These are the questions currently organizing my work.</p>
+    <p class="page-lead">I work on <span id="communication">multi-agent systems</span>, <span id="mechanisms">interpretability</span>, and <span id="agents">agentic learning</span>, with an interest in how language models reason, interact, and learn from feedback.</p>
   </section>
+    <section class="wrap home-block" aria-labelledby="papers-heading">
+      <div class="section-heading"><h2 id="papers-heading">Papers &amp; research outputs</h2></div>
+      <article class="project-summary">
+        <div>
+          <h3><a href="https://arxiv.org/abs/2608.01463">Where Reasoning Diverges: Localized Multi-Agent Debate for Multi-Hop Question Answering</a></h3>
+          <p>Weijun Gao, <strong>Xiang Ding</strong>, Haoyang Liu, Tiancheng Xing</p>
+          <p>arXiv preprint · 2026 · v2, August 4</p>
+          <p>Localized Multi-Agent Debate (LMAD) identifies the earliest conflict in agents’ reasoning and limits discussion to the relevant local segments. Guarded resolution updates a shared committed state without reopening accepted steps.</p>
+          <p>Evaluated on four multi-hop question-answering benchmarks with ten backbones from four model families. The paper reports the highest macro-averaged judge accuracy across all ten backbones among the evaluated methods.</p>
+          <div class="profile-links"><a href="https://arxiv.org/abs/2608.01463">arXiv ↗</a><a href="https://arxiv.org/pdf/2608.01463">PDF ↗</a></div>
+        </div>
+      </article>
+    </section>
 
-  <section class="wrap research-list">
-    <article id="communication" class="research-entry reveal">
-      <div class="entry-index">01</div>
-      <div class="entry-body">
-        <p class="mono accent">MULTI-AGENT SYSTEMS</p>
-        <h2>How do multiple agents work together as a system?</h2>
-        <p>I am interested in multi-agent systems: how agents interact, coordinate, and work together on shared tasks. Communication and collective reasoning are parts of this broader interest in how the system behaves as a whole.</p>
-        <div class="chips"><span>multi-agent systems</span><span>coordination</span><span>interaction</span><span>communication</span></div>
-      </div>
-      <div class="entry-glyph">↗</div>
-    </article>
 
-    <article id="mechanisms" class="research-entry reveal">
-      <div class="entry-index">02</div>
-      <div class="entry-body">
-        <p class="mono accent">INTERPRETABILITY</p>
-        <h2>What changes inside a model when reasoning is rescued?</h2>
-        <p>My research examines reasoning failures as mechanisms rather than isolated mistakes: which internal or behavioral patterns predict recovery, corruption, selection, and commitment across models and inference strategies.</p>
-        <div class="chips"><span>mechanisms</span><span>failure analysis</span><span>SAE</span><span>reasoning traces</span></div>
-      </div>
-      <div class="entry-glyph">↗</div>
-    </article>
-
-    <article id="agents" class="research-entry reveal">
-      <div class="entry-index">03</div>
-      <div class="entry-body">
-        <p class="mono accent">AGENTIC LEARNING</p>
-        <h2>What should an agent learn from interaction?</h2>
-        <p>Tools, memory, search, environment feedback, and long-horizon execution all create supervision that does not look like static next-token prediction. I am interested in efficient ways to turn that interaction into better behavior.</p>
-        <div class="chips"><span>RL</span><span>tools</span><span>memory</span><span>search</span></div>
-      </div>
-      <div class="entry-glyph">↗</div>
-    </article>
-  </section>
-
-  <section class="wrap manifesto reveal">
-    <p class="mono">WORKING STYLE</p>
-    <blockquote>Find the phenomenon first. Build the explanation second. Add machinery only when the problem earns it.</blockquote>
-  </section>
 </main>
 
 <footer class="footer wrap"><p>© 2026 Xiang Ding</p><div><a href="./projects.html">Projects</a><span>·</span><a href="./blog/">Notes</a></div></footer>
