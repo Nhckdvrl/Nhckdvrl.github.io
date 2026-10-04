@@ -37,3 +37,5 @@
 .back-to-top{display:inline-block;margin-top:35px;font-size:13px}
 @media(max-width:680px){.latent-article{padding-top:26px}.latent-article h1{font-size:29px;line-height:1.5}.article-toc{padding:14px 18px;margin:24px 0 32px}.article-toc ol{grid-template-columns:1fr;gap:3px}.latent-prose{font-size:16px;line-height:1.95}.latent-prose h2{font-size:23px;margin-top:40px}.math-block{padding:16px 10px}.math-block math{font-size:.95em}.references{font-size:13px}}
 @media print{.article-toc,.back-link,.back-to-top{display:none}.latent-article{max-width:none}.math-block,.table-scroll{overflow:visible}.table-scroll table{min-width:0}.latent-prose h2{break-after:avoid}.math-block{break-inside:avoid}}
+
+.article-tags{display:flex;flex-wrap:wrap;gap:8px 10px;list-style:none;padding:0;margin:20px 0 0}.article-tags li{font-size:11px;font-weight:500;line-height:1.6;letter-spacing:.025em;color:var(--accent);background:#f1f5f5;border:1px solid #dbe4e5;border-radius:4px;padding:4px 9px}
