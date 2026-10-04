@@ -1,5 +1,5 @@
 import * as THREE from './assets/vendor/three.module.min.js';
-import { CanvasPetRenderer } from './fish-cat-canvas.js?v=fishcat4';
+import { CanvasPetRenderer } from './fish-cat-canvas.js?v=fishcat5';
 
 // Original procedural sculpture, interpreted from the supplied fish-cat reference.
 // Geometry, painted face, and lighting are local; no model/CDN/tracking requests.
@@ -179,7 +179,7 @@ export function createFishCat(button, { paused = false, onHello = () => {} } = {
   const resizeObserver=new ResizeObserver(resize);resizeObserver.observe(button);
   const intersectionObserver=new IntersectionObserver(entries=>{inView=entries[0].isIntersecting;if(inView)schedule();else if(frame){cancelAnimationFrame(frame);frame=0;}},{threshold:.01});intersectionObserver.observe(button);
   function hello(){onHello();if(contextLost)return;if(paused){setFace('happy');renderer.render(scene,camera);setTimeout(()=>{if(!disposed){setFace('open');renderer.render(scene,camera);}},1000);}else{helloAt=elapsed;schedule();}}
-  button.addEventListener('pointermove',e=>{const r=button.getBoundingClientRect();hoverX=(e.clientX-r.left)/r.width*2-1;hoverY=(e.clientY-r.top)/r.height*2-1;if(drag){const delta=e.clientX-drag.x;if(Math.abs(delta)>5)moved=true;targetTurn=THREE.MathUtils.clamp(drag.turn+delta/r.width*2.4,-.85,.85);if(paused){turn=targetTurn;render(performance.now());}}});
+  button.addEventListener('pointermove',e=>{const r=button.getBoundingClientRect();hoverX=(e.clientX-r.left)/r.width*2-1;hoverY=(e.clientY-r.top)/r.height*2-1;if(drag){const delta=e.clientX-drag.x;if(Math.abs(delta)>5)moved=true;targetTurn=THREE.MathUtils.clamp(drag.turn+delta/r.width*2.4,-.85,.85);if(paused){turn=targetTurn;if(frame)cancelAnimationFrame(frame);frame=0;render(performance.now());}}});
   button.addEventListener('pointerleave',()=>{hoverX=hoverY=0;});
   button.addEventListener('pointerdown',e=>{drag={x:e.clientX,turn:targetTurn};moved=false;button.setPointerCapture(e.pointerId);});
   button.addEventListener('pointerup',()=>{drag=null;});
