@@ -1,9 +1,14 @@
 import * as THREE from './assets/vendor/three.module.min.js';
+import { CanvasPetRenderer } from './fish-cat-canvas.js?v=fishcat2';
 
 // Original procedural sculpture, interpreted from the supplied fish-cat reference.
 // Geometry, painted face, and lighting are local; no model/CDN/tracking requests.
 export function createFishCat(button, { paused = false, onHello = () => {} } = {}) {
-  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' });
+  let renderer;
+  try { renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' }); }
+  catch { renderer = new CanvasPetRenderer(); }
+  const software = !!renderer.software;
+  button.closest('.pet-dock').dataset.renderer = software ? 'canvas3d' : 'webgl';
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -26,7 +31,7 @@ export function createFishCat(button, { paused = false, onHello = () => {} } = {
   const pink = new THREE.MeshStandardMaterial({ color: 0xf2a6cb, roughness: .4 });
   const dark = new THREE.MeshStandardMaterial({ color: 0x192031, roughness: .69 });
   const hairMaterial = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: .41 });
-  const sphere = new THREE.SphereGeometry(1, 40, 28);
+  const sphere = new THREE.SphereGeometry(1, software ? 22 : 40, software ? 16 : 28);
   function ellipsoid(parent, material, pos, scale, rotation = 0) {
     const mesh = new THREE.Mesh(sphere, material); mesh.position.set(...pos); mesh.scale.set(...scale); mesh.rotation.z = rotation; parent.add(mesh); return mesh;
   }
@@ -37,7 +42,7 @@ export function createFishCat(button, { paused = false, onHello = () => {} } = {
   function lock(parent, coords, width, depth = .4, tint = true) {
     const curve = new THREE.CubicBezierCurve3(...coords.map(p => new THREE.Vector3(...p)));
     const positions = [], colors = [], indices = [];
-    const count = 30, around = 14;
+    const count = software ? 20 : 30, around = software ? 10 : 14;
     const c1 = new THREE.Color(0xf9f6ff), c2 = new THREE.Color(tint ? 0xf2a7cf : 0xf9f6ff);
     for (let i = 0; i <= count; i++) {
       const t = i / count, p = curve.getPoint(t), tangent = curve.getTangent(t);
@@ -130,7 +135,7 @@ export function createFishCat(button, { paused = false, onHello = () => {} } = {
   }
   const textures={ open:faceTexture('open'), blink:faceTexture('blink'), happy:faceTexture('happy') };
   const faceMat=new THREE.MeshBasicMaterial({map:textures.open,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1});
-  const fg=new THREE.PlaneGeometry(1.74,1.05,44,32); const pos=fg.attributes.position;
+  const fg=new THREE.PlaneGeometry(1.74,1.05,software ? 16 : 44,software ? 10 : 32); const pos=fg.attributes.position;
   for(let i=0;i<pos.count;i++){const x=pos.getX(i)+.05,y=pos.getY(i)-.12;const z=.02+.84*Math.sqrt(Math.max(.01,1-((x-.05)/1.05)**2-((y+.15)/.91)**2));pos.setXYZ(i,x,y,z+.013);}
   fg.computeVertexNormals();const face=new THREE.Mesh(fg,faceMat);pet.add(face);
   // A soft contact shadow gives the floating character a home without a card or backdrop.
@@ -140,12 +145,13 @@ export function createFishCat(button, { paused = false, onHello = () => {} } = {
   const bubbleMat=new THREE.MeshStandardMaterial({color:0xc5dce9,transparent:true,opacity:.30,roughness:.14,metalness:.1});
   for(let i=0;i<3;i++){const b=ellipsoid(bubbles,bubbleMat,[-1.1+i*1.1,-.6,0],[.07,.07,.07]);b.visible=false;}
   let frame=0,last=0, elapsed=0, helloAt=-20, nextBlink=4.5, blinkUntil=0, currentFace='open';
-  let hoverX=0,hoverY=0,turn=0,targetTurn=0,drag=null,moved=false,inView=true,disposed=false;
+  let hoverX=0,hoverY=0,turn=0,targetTurn=0,drag=null,moved=false,inView=true,disposed=false,contextLost=false;
   const baseAngle=-.13;
   function setFace(name){if(currentFace!==name){faceMat.map=textures[name];currentFace=name;}}
   function render(time=0) {
-    frame=0;if(disposed)return;
-    const dt=Math.min((time-last)/1000,.06)||0;last=time;if(!paused)elapsed+=dt;
+    frame=0;if(disposed||contextLost)return;
+    if(!paused && time-last < (software ? 80 : 32)){if(inView&&!document.hidden)frame=requestAnimationFrame(render);return;}
+    const dt=Math.min((time-last)/1000,.12)||0;last=time;if(!paused)elapsed+=dt;
     const h=elapsed-helloAt, greeting=h>=0&&h<2.6;
     turn+=(targetTurn-turn)*.12;
     pet.rotation.y=baseAngle+turn+(paused?0:hoverX*.12+Math.sin(elapsed*.65)*.055);
@@ -163,19 +169,19 @@ export function createFishCat(button, { paused = false, onHello = () => {} } = {
     renderer.render(scene,camera);
     if(!paused&&inView&&!document.hidden)frame=requestAnimationFrame(render);
   }
-  function schedule(){if(!frame&&!disposed){last=performance.now();frame=requestAnimationFrame(render);}}
+  function schedule(){if(!frame&&!disposed&&!contextLost){last=performance.now();frame=requestAnimationFrame(render);}}
   function resize(){const r=button.getBoundingClientRect();renderer.setSize(Math.max(1,r.width),Math.max(1,r.height),false);schedule();}
   const resizeObserver=new ResizeObserver(resize);resizeObserver.observe(button);
   const intersectionObserver=new IntersectionObserver(entries=>{inView=entries[0].isIntersecting;if(inView)schedule();else if(frame){cancelAnimationFrame(frame);frame=0;}},{threshold:.01});intersectionObserver.observe(button);
-  function hello(){onHello();if(paused){setFace('happy');renderer.render(scene,camera);setTimeout(()=>{if(!disposed){setFace('open');renderer.render(scene,camera);}},1000);}else{helloAt=elapsed;schedule();}}
+  function hello(){onHello();if(contextLost)return;if(paused){setFace('happy');renderer.render(scene,camera);setTimeout(()=>{if(!disposed){setFace('open');renderer.render(scene,camera);}},1000);}else{helloAt=elapsed;schedule();}}
   button.addEventListener('pointermove',e=>{const r=button.getBoundingClientRect();hoverX=(e.clientX-r.left)/r.width*2-1;hoverY=(e.clientY-r.top)/r.height*2-1;if(drag){const delta=e.clientX-drag.x;if(Math.abs(delta)>5)moved=true;targetTurn=THREE.MathUtils.clamp(drag.turn+delta/r.width*2.4,-.85,.85);if(paused){turn=targetTurn;render(performance.now());}}});
   button.addEventListener('pointerleave',()=>{hoverX=hoverY=0;});
   button.addEventListener('pointerdown',e=>{drag={x:e.clientX,turn:targetTurn};moved=false;button.setPointerCapture(e.pointerId);});
   button.addEventListener('pointerup',()=>{drag=null;});
   button.addEventListener('pointercancel',()=>{drag=null;moved=false;});
   button.addEventListener('click',()=>{if(!moved)hello();moved=false;});
-  canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();if(frame)cancelAnimationFrame(frame);frame=0;button.closest('.pet-dock').dataset.ready='false';});
-  canvas.addEventListener('webglcontextrestored',()=>{button.closest('.pet-dock').dataset.ready='true';schedule();});
+  canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();contextLost=true;if(frame)cancelAnimationFrame(frame);frame=0;button.closest('.pet-dock').dataset.ready='false';});
+  canvas.addEventListener('webglcontextrestored',()=>{contextLost=false;button.closest('.pet-dock').dataset.ready='true';schedule();});
   resize();
   return { setPaused(value){paused=value;if(frame){cancelAnimationFrame(frame);frame=0;}schedule();}, dispose(){disposed=true;cancelAnimationFrame(frame);resizeObserver.disconnect();intersectionObserver.disconnect();scene.traverse(obj=>{if(obj.geometry)obj.geometry.dispose();});Object.values(textures).forEach(t=>t.dispose());renderer.dispose();canvas.remove();} };
 }

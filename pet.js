@@ -18,7 +18,7 @@ async function load() {
   if (loading || companion || hidden) return;
   loading = true;
   try {
-    const { createFishCat } = await import('./fish-cat.js?v=fishcat1');
+    const { createFishCat } = await import('./fish-cat.js?v=fishcat2');
     companion = createFishCat(play, { paused: paused || hidden, onHello: () => announce('The fish-cat says hello!') });
     dock.dataset.ready = 'true';
     updateMotion();

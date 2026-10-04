@@ -17,6 +17,6 @@
 .pet-status { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .pet-show { border: 0; padding: 4px 0 4px 12px; background: none; color: var(--muted); font: inherit; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 @media (min-width: 1380px) { .pet-dock { position: fixed; bottom: 26px; right: 20px; width: 190px; margin: 0; z-index: 2; } }
-@media (max-width: 680px) { .pet-dock { width: 120px; margin: 15px 0 -10px -20px; } .pet-hide { top: -3px; right: -2px; width: 30px; height: 30px; } .pet-caption { gap: 4px; margin-top: -4px; } .pet-hint { display: none; } }
+@media (max-width: 680px) { .pet-dock { width: 120px; margin: 15px 0 -10px -20px; } .pet-hide { top: -3px; right: 0; width: 30px; height: 30px; } .pet-caption { gap: 4px; margin-top: -4px; } .pet-hint { display: none; } }
 @media (max-width: 380px) { .profile-aside { grid-row: 1; display: flex; align-items: center; justify-content: space-between; } .pet-dock { margin: -12px 0; } }
 @media print { .pet-dock, .pet-show { display: none !important; } }
