@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="向量里有信息，和另一个模型能用它回答问题，是两回事。沿着一个私有文档问答例子，拆开连续消息的坐标、读取方式、训练目标与计算成本。"><title>绕过文字以后，一个模型怎样用上另一个模型的内部状态？ — Xiang Ding</title><link rel="stylesheet" href="../style.css?v=20261004c"><link rel="stylesheet" href="../article.css?v=latent1"></head>
+<body><a class="skip-link" href="#main">跳到正文</a>
+<header class="nav-shell" lang="en"><a class="wordmark" href="../index.html">Xiang Ding</a><nav aria-label="Main navigation"><a href="../index.html">Home</a><a href="../research.html">Research</a><a href="../projects.html">Projects</a><a href="./" class="active" aria-current="page">Blog</a><a href="../about.html">About</a></nav></header>
+<main id="main" class="latent-article wrap"><a class="back-link" href="./">← 全部文章</a><header class="article-head"><p class="article-meta"><time datetime="2026-10-04">2026-10-04</time><span>·</span><span>约 28 分钟</span></p><h1>绕过文字以后，一个模型怎样用上另一个模型的内部状态？</h1><p class="dek">从词汇概率到 KV cache，理解 latent communication 的接口、训练与证据</p></header><details class="article-toc" open><summary>本文目录</summary><ol><li><a href="#section-1">先分清 A 知道什么，B 缺少什么</a></li><li><a href="#section-2">文字拿掉后，是否还需要共同坐标？</a></li><li><a href="#section-3">接收者到底怎样“读”一个向量？</a></li><li><a href="#section-4">同一个模型的记忆，为何容易交接一些？</a></li><li><a href="#section-5">真正跨模型时，训练在教什么？</a></li><li><a href="#section-6">传过去的是输入的表示，还是已经算出的结果？</a></li><li><a href="#section-7">有些信息，保留文字反而更合适</a></li><li><a href="#section-8">怎样知道 B 真用了 A 传来的内容？</a></li><li><a href="#section-9">省下 token 以后，账应该怎么算？</a></li><li><a href="#section-10">回到最初的问题</a></li><li><a href="#section-11">阅读与参考</a></li></ol></details><article class="latent-prose"><p>假设模型 A 读到一份内部文档：项目 <code>Neral-7</code> 的负责人是林岚，下次评审在周四。模型 B 没看过文档，只收到问题：“Neral-7 的负责人是谁？”</p>
+<p>最普通的协作方式，是让 A 写一句话，再让 B 阅读。Latent communication 想省掉其中的文字中转：A 已经算出了文档的内部表示，为什么不能把它直接交给 B？</p>
+<p>这个想法很自然。但把一句话换成一个向量以后，原来被语言接口包办的事情也浮了出来：哪个坐标表示什么？B 在哪一层接收？它怎样从消息里找出人名？A 保存了很多信息，哪些与 B 的问题有关？</p>
+<p>这里的关键，是建立一条<strong>接收者能使用的计算路径</strong>。连续消息可以是词汇分布的加权嵌入、某层 hidden state，也可以是整组注意力缓存。不同路径已有实际成功的证据，条件和代价却很不一样。</p>
+<p>下面一直围绕这个小问题展开：A 算过的东西，怎样变成 B 回答时真正用得上的东西？文中的项目、人名及二维例子都是为解释机制构造的，不是论文实验。</p>
+<h2 id="section-1">先分清 A 知道什么，B 缺少什么</h2>
+<p>在刚才的例子里，A 有私有文档，B 有问题。A 需要传过去的是 B 原本没有的事实。</p>
+<p>换一种情形：A、B 都看到了完整文档和问题，只是 A 更擅长推理。此时 A 的价值可能是识别关系、组织证据、给出计算结果，而非补充原始输入。再换一种情形：两个角色使用同一模型，前一个角色已经处理了长上下文，后一个只想接着算。传 cache 的主要价值又可能是避免重复计算。</p>
+<p>这三种设定都可能叫 latent communication，却回答不同的问题。一个系统在“共同做数学题”上变好，并不能直接说明它能传递私有文档里的罕见人名。</p>
+<p>为了把接口说清楚，可以先写一个简单模型：</p>
+<div class="math-block" tabindex="0" role="region" aria-label="公式，可横向滚动"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mtable rowspacing="0.25em" columnalign="center" columnspacing="0em"><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>m</mi><mo>=</mo><mi>C</mi><mo stretchy="false">(</mo><msub><mi>E</mi><mi>s</mi></msub><mo stretchy="false">(</mo><msub><mi>x</mi><mi>s</mi></msub><mo stretchy="false">)</mo><mo stretchy="false">)</mo><mo separator="true">,</mo></mrow></mstyle></mtd></mtr><mtr><mtd><mstyle scriptlevel="0" displaystyle="true"><mrow><mi>p</mi><mo stretchy="false">(</mo><mi>y</mi><mo stretchy="false">)</mo><mo>=</mo><msub><mi>D</mi><mi>r</mi></msub><mo fence="true" stretchy="true" minsize="1.2em" maxsize="1.2em">(</mo><msub><mi>x</mi><mi>r</mi></msub><mo separator="true">,</mo><mi>I</mi><mo stretchy="false">(</mo><mi>m</mi><mo stretchy="false">)</mo><mo fence="true" stretchy="true" minsize="1.2em" maxsize="1.2em">)</mo><mi mathvariant="normal">.</mi></mrow></mstyle></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{gathered}m=C(E_s(x_s)),\\
+p(y)=D_r\bigl(x_r,I(m)\bigr).\end{gathered}</annotation></semantics></math></span></div>
+<p>这里，<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mi>s</mi></msub></mrow><annotation encoding="application/x-tex">x_s</annotation></semantics></math></span> 是 A 的输入，<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>E</mi><mi>s</mi></msub></mrow><annotation encoding="application/x-tex">E_s</annotation></semantics></math></span> 是 A 已经完成的编码或推理，<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi></mrow><annotation encoding="application/x-tex">C</annotation></semantics></math></span> 负责选择、压缩、转换消息；<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mi>r</mi></msub></mrow><annotation encoding="application/x-tex">x_r</annotation></semantics></math></span> 是 B 自己的输入，<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>I</mi></mrow><annotation encoding="application/x-tex">I</annotation></semantics></math></span> 把消息放进 B 的计算，<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>D</mi><mi>r</mi></msub></mrow><annotation encoding="application/x-tex">D_r</annotation></semantics></math></span> 才是随后生成答案的过程。有些接口还会让 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>C</mi></mrow><annotation encoding="application/x-tex">C</annotation></semantics></math></span> 依赖 B 的状态，先看 B 需要什么再构造消息。</p>
+<p>这是本文的整理框架，不是某篇论文证明的统一模型。它有一个简单好处：不能只报 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi></mrow><annotation encoding="application/x-tex">m</annotation></semantics></math></span> 有多少维，就跳过接收端。</p>
+<p>下面这张表只保留几条会改变解释的轴。</p>
+<div class="table-scroll" role="region" aria-label="连续通信接口分类表，可横向滚动" tabindex="0"><table><caption>不同连续通信路径的接口与读取条件</caption>
+<thead>
+<tr>
+<th scope="col">路径与例子</th>
+<th scope="col">两边的信息关系</th>
+<th scope="col">消息怎样进入接收者</th>
+<th scope="col">可读性来自哪里</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>软词汇消息：CIPHER</td>
+<td>常为共享问题、交换回答</td>
+<td>接收者的输入嵌入</td>
+<td>共同词汇坐标</td>
+</tr>
+<tr>
+<td>激活与侧向注意力：AC、CALM</td>
+<td>私有信息或共同输入，依任务而定</td>
+<td>中间层替换，或 cross-attention</td>
+<td>兼容的表示，或训练过的接口</td>
+</tr>
+<tr>
+<td>缓存交接：KVComm、LatentMAS</td>
+<td>私有文档，或共享问题下的角色接力</td>
+<td>每层注意力的 K/V</td>
+<td>相同或受限兼容的模型坐标</td>
+</tr>
+<tr>
+<td>异构缓存桥：C2C、XKV</td>
+<td>C2C 共享原文；XKV 划分证据</td>
+<td>学习修改接收者 cache</td>
+<td>针对接收行为训练的转换器</td>
+</tr>
+<tr>
+<td>文本计算复用：KVCOMM</td>
+<td>已有文本在不同角色中重复出现</td>
+<td>近似恢复该文本的 cache</td>
+<td>同一模型、位置处理与上下文校正</td>
+</tr>
+</tbody></table></div><p class="table-hint">窄屏可左右滑动查看完整表格。</p>
+<p>表中两个大小写近似的名字属于不同论文：<a id="cite-15" href="https://arxiv.org/abs/2510.03346v3">KVComm</a><sup class="citation"><a href="#ref-15" aria-label="参考文献 15">15</a></sup> 可以仅对发送端文档做 prefill，不生成文字消息；<a id="cite-16" href="https://arxiv.org/abs/2510.12872v2">KVCOMM</a><sup class="citation"><a href="#ref-16" aria-label="参考文献 16">16</a></sup> 保留上游文字生成，主要省下接收端重复处理文本的 prefill。看见“KV 通信”四个字，仍然需要追问省掉了哪一步。</p>
+<h2 id="section-2">文字拿掉后，是否还需要共同坐标？</h2>
+<p>先看一种相对温和的做法：不直接交换任意 hidden state，而是保留词汇这个公共参照。</p>
+<p>普通生成在每一步产生词汇概率 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi></mrow><annotation encoding="application/x-tex">p</annotation></semantics></math></span>，再选出一个 token。CIPHER 不立刻选词，而是计算</p>
+<div class="math-block" tabindex="0" role="region" aria-label="公式，可横向滚动"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>m</mi><mo>=</mo><msubsup><mi>E</mi><mi>r</mi><mi mathvariant="normal">⊤</mi></msubsup><mi>p</mi><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">m=E_r^\top p,</annotation></semantics></math></span></div>
+<p>其中 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>E</mi><mi>r</mi></msub></mrow><annotation encoding="application/x-tex">E_r</annotation></semantics></math></span> 是接收者的词嵌入表。若两个模型共享 tokenizer 和词汇索引，发送者便可把自己的概率权重落到接收者的嵌入上。双方的 hidden width、嵌入数值不必相同，但同一个概率坐标必须指向同一个 token。这是它异模型实验的实际桥梁。<a id="cite-1" href="https://arxiv.org/abs/2310.06272v2">CIPHER，§3</a><sup class="citation"><a href="#ref-1" aria-label="参考文献 1">1</a></sup></p>
+<p>直观地说，A 暂时不把“可能是甲，也可能是乙”压成唯一选择，而是发一个加权位置。论文中，把软消息主要留在不确定的位置，效果接近全程使用软消息；这为“减少过早硬选择”提供了经验支持。<a href="https://arxiv.org/abs/2310.06272v2">CIPHER，§5.3</a><sup class="citation"><a href="#ref-1" aria-label="参考文献 1">1</a></sup></p>
+<p>但这里有两个容易混淆的层次。第一，<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msubsup><mi>E</mi><mi>r</mi><mi mathvariant="normal">⊤</mi></msubsup><mi>p</mi></mrow><annotation encoding="application/x-tex">E_r^\top p</annotation></semantics></math></span> 是词嵌入的重心。词汇通常比嵌入维度多得多，不同概率分布可以落到同一个重心，它不会自动保存完整的 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi></mrow><annotation encoding="application/x-tex">p</annotation></semantics></math></span>。第二，后面的神经网络是非线性的，把几个候选的嵌入取平均再运行，一般不等于分别运行每个候选再平均结果。</p>
+<p>这条路保留了一种很有用的折中：消息不再是离散词，但可读性仍然依赖语言训练留下的坐标。</p>
+<p>如果连这层参照也拿掉，直接把 A 的 hidden state 塞给 B，会怎样？</p>
+<p>考虑一个人为构造的二维例子。A 用 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mn>1</mn><mo separator="true">,</mo><mn>0</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(1,0)</annotation></semantics></math></span> 表示“林岚”、<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false">(</mo><mn>0</mn><mo separator="true">,</mo><mn>1</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(0,1)</annotation></semantics></math></span> 表示“周四”；B 恰好使用相反的坐标。双方都能正确做自己的任务，向量尺寸也完全一致，直接复制却会把负责人和日期对调。现实表示当然不会这么整齐，但这个例子揭示了同一个问题：<strong>模型内部的坐标含义来自它前后的计算，而非维度编号本身。</strong></p>
+<p>因此，形状兼容只保证张量能放进去。数值尺度、层的位置、此前上下文和后续读出，都可能改变它会起什么作用。AC 直接把发送者某层最后位置的激活移植到接收者，确实在部分同构和异构组合上有效；不过收益随任务和模型对变化，加入线性映射也并非总会更好。这给出了直接移植可行的实例，还没有赋予任意模型共同坐标。<a id="cite-3" href="https://arxiv.org/abs/2501.14082v2">Communicating Activations，§3–4、附录 B</a><sup class="citation"><a href="#ref-3" aria-label="参考文献 3">3</a></sup></p>
+<p>最近的 Portable Semantics 把这件事放进一个可控的小世界：小模型单元通过两个向量完成有限状态上的函数组合，研究者再测试不同训练实例之间的直接交换与几类对齐。一个同初始化的实例对可以互通，跨初始化方向则没有通过论文设定的迁移标准。这个结果的价值是把“各自学会同一任务”与“彼此接口兼容”分开；其模型、任务和映射类别都有限，不能据此推出一般的不可能性。<a id="cite-28" href="https://arxiv.org/abs/2609.11365v1">Portable Semantics，§3–6</a><sup class="citation"><a href="#ref-28" aria-label="参考文献 28">28</a></sup></p>
+<h2 id="section-3">接收者到底怎样“读”一个向量？</h2>
+<p>回到文档例子。只发最后一个位置的向量，意味着把需要传递的内容放进一个固定载体里。B 要从这个载体中找出负责人，A 的编码和 B 的读出必须相互配合。</p>
+<p>另一种办法，是保留多个位置，让 B 自己查询。注意力恰好提供了这样一个接口：</p>
+<div class="math-block" tabindex="0" role="region" aria-label="公式，可横向滚动"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi mathvariant="normal">Read</mi><mo>⁡</mo><mo stretchy="false">(</mo><mi>q</mi><mo separator="true">,</mo><mi>K</mi><mo separator="true">,</mo><mi>V</mi><mo stretchy="false">)</mo><mo>=</mo><mi mathvariant="normal">softmax</mi><mo>⁡</mo><mrow><mo fence="true">(</mo><mfrac><mrow><mi>q</mi><msup><mi>K</mi><mi mathvariant="normal">⊤</mi></msup></mrow><msqrt><mi>d</mi></msqrt></mfrac><mo fence="true">)</mo></mrow><mi>V</mi><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">\operatorname{Read}(q,K,V)
+=\operatorname{softmax}\left(\frac{qK^\top}{\sqrt d}\right)V.</annotation></semantics></math></span></div>
+<p>可以把 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>q</mi></mrow><annotation encoding="application/x-tex">q</annotation></semantics></math></span> 理解为 B 当前想找什么，把 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>K</mi></mrow><annotation encoding="application/x-tex">K</annotation></semantics></math></span> 理解为记忆的检索地址，把 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>V</mi></mrow><annotation encoding="application/x-tex">V</annotation></semantics></math></span> 理解为取出的内容。在真实模型里，它们都是分布式表示，不会明确分成“负责人栏”和“日期栏”。</p>
+<p>这也解释了为什么把 A 的 KV cache 复制过来并不天然成立。A 的 key 是为 A 的 query 投影产生的，B 的 query 未必会给正确位置高分。即使取对了 value，B 的后续网络也可能不会使用它。</p>
+<p>用一个纯代数例子可以把这种依赖写清：若 key 的坐标变成 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>K</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo>=</mo><mi>K</mi><mi>A</mi></mrow><annotation encoding="application/x-tex">K&#x27;=KA</annotation></semantics></math></span>，要保持点积，就需要 query 配合变为 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>q</mi><mo mathvariant="normal" lspace="0em" rspace="0em">′</mo></msup><mo>=</mo><mi>q</mi><msup><mi>A</mi><mrow><mo>−</mo><mi mathvariant="normal">⊤</mi></mrow></msup></mrow><annotation encoding="application/x-tex">q&#x27;=qA^{-\top}</annotation></semantics></math></span>，其中 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>A</mi></mrow><annotation encoding="application/x-tex">A</annotation></semantics></math></span> 可逆。value 的坐标若也变了，读出侧还需要相应补偿。这不是某个实际接口必然满足的性质，只是说明“表示了同一件事”和“可以直接相乘”之间还隔着读取协议。</p>
+<p>CALM 的选择是学习这个协议：冻结两个模型，用投影和 cross-attention 让接收者查询另一模型的多层状态。它的互补能力实验很直观：一个模型掌握字符串到数字的对应，另一个会算术，组合后才能完成带这些字符串的计算。这与私有文档例子并不相同，但展示了中间表示可以支持原有能力的组合。<a id="cite-2" href="https://arxiv.org/abs/2401.02412v1">CALM，§3–4、Table 1</a><sup class="citation"><a href="#ref-2" aria-label="参考文献 2">2</a></sup></p>
+<p>接收位置也会改变问题。放进输入层的 soft prefix 要经过所有后续层；拼进原生 KV 的内容会参与原生注意力归一化；独立 side attention 则先单独检索，再把结果加回主干。三者即使传同样数量的向量，模型看到的计算也不同。</p>
+<p>Vision Wormhole 提供了另一个有意思的接收位置：它为不同视觉语言模型训练 codec，把消息解码成视觉嵌入入口处的残差。这里没有把文字画成图片再 OCR；它借用了模型本来就具有的连续输入通道。跨模型可读性仍由 codec 和锚点对齐建立。<a id="cite-9" href="https://arxiv.org/abs/2602.15382v3">Vision Wormhole，§3、附录 B–C</a><sup class="citation"><a href="#ref-9" aria-label="参考文献 9">9</a></sup></p>
+<p>至此，“传内部状态”已经有了更具体的含义：找一个 B 能访问的计算入口，把 A 的状态变成这个入口能够利用的条件。</p>
+<h2 id="section-4">同一个模型的记忆，为何容易交接一些？</h2>
+<p>如果 A、B 使用同一个 checkpoint，很多坐标问题可以暂时省掉。</p>
+<p>当一个模型在相同输入、位置和掩码约定下重算历史，得到的 K/V 与原先缓存一致，直接复用便能避免那部分重复计算。这是 cache 的计算等价性。LatentMAS 利用兼容主干，把角色接力过程中的多层 KV 留给后续角色；中间角色可以连续生成 latent steps，最后角色再输出文字。其“lossless”论证中的缓存等价，依赖同一模型与相同输入等条件。<a id="cite-13" href="https://arxiv.org/abs/2511.20639v4">LatentMAS，§3、附录 A–B</a><sup class="citation"><a href="#ref-13" aria-label="参考文献 13">13</a></sup></p>
+<p>这里容易多走一步：缓存等价并不说明 latent 推理与某段文字推理等价，更不说明换一个模型后语义仍然不变。继承前一个角色的 cache，还会继承其上下文和已经造成的偏向。</p>
+<p>同一模型也未必能舒服地接收自己的任意状态。最后层 hidden state 和输入嵌入的分布可以不同。Coconut 在单模型内部把前一步 hidden state 反馈成下一步输入，并用分阶段训练让模型适应这种计算；它帮助理解连续状态递推，但不是独立模型之间的通信实验。CCoT 同样属于单模型压缩推理，生成压缩状态后的准确率与完整文字 CoT 之间仍有明显差距。<a id="cite-20" href="https://arxiv.org/abs/2412.06769v4">Coconut，§3–4</a><sup class="citation"><a href="#ref-20" aria-label="参考文献 20">20</a></sup>；<a id="cite-21" href="https://arxiv.org/abs/2412.13171v1">CCoT，§3–5</a><sup class="citation"><a href="#ref-21" aria-label="参考文献 21">21</a></sup></p>
+<p>StateBridge 则在同模型角色之间，利用已生成消息的 hidden states 与对应词嵌入，做逐消息的几何对齐，再构造接收前缀。它不需要跨样本训练，却仍然需要生成原消息并计算对齐。因而“免训练”“不传文字”和“不生成文字”是三个独立属性。<a id="cite-8" href="https://arxiv.org/abs/2608.13317v1">StateBridge，§3</a><sup class="citation"><a href="#ref-8" aria-label="参考文献 8">8</a></sup></p>
+<h2 id="section-5">真正跨模型时，训练在教什么？</h2>
+<p>最直接的目标，是让 B 在收到消息后答对：</p>
+<div class="math-block" tabindex="0" role="region" aria-label="公式，可横向滚动"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi mathvariant="script">L</mi><mo stretchy="false">(</mo><mi>θ</mi><mo stretchy="false">)</mo><mo>=</mo><mo>−</mo><mi>log</mi><mo>⁡</mo><msub><mi>p</mi><mrow><mi>r</mi><mo separator="true">,</mo><mi>θ</mi></mrow></msub><mo stretchy="false">(</mo><msup><mi>y</mi><mo>∗</mo></msup><mo>∣</mo><msub><mi>x</mi><mi>r</mi></msub><mo separator="true">,</mo><mi>m</mi><mo stretchy="false">)</mo><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">\mathcal L(\theta)
+=-\log p_{r,\theta}(y^*\mid x_r,m).</annotation></semantics></math></span></div>
+<p><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>θ</mi></mrow><annotation encoding="application/x-tex">\theta</annotation></semantics></math></span> 可以只包含桥接器，也可以包含接收者的部分参数。梯度穿过 B 的读取过程，告诉桥接器哪些变换对答案有帮助。相比只让两组向量在欧氏距离上接近，这个目标更贴近最终用途。</p>
+<p>这个区别在缓存复用中也能看到。CacheBridge 在同家族模型之间拟合缓存映射，加入面向注意力敏感度的加权后，后续预测可以改善，而缓存本身的拟合分数未必更高。它为“接收用途比原样重建更重要”提供了一个具体例子，尚未验证跨家族代理通信。<a id="cite-30" href="https://arxiv.org/abs/2609.00891v1">CacheBridge，§3–4</a><sup class="citation"><a href="#ref-30" aria-label="参考文献 30">30</a></sup></p>
+<p>但“用答案损失训练”也并非充分条件。如果 B 单靠问题就经常答对，训练可能学到通用偏置，未必迫使它读取每条消息的独特内容。稍后还需要内容干预来区分。</p>
+<p>C2C 是共享输入设定下的具体实现：双方都处理同一段文字，先建立 token 和层的对应，再由训练过的模块融合双方 KV，修改接收者的 prompt cache。它省去发送者先写一段解释的过程，而不要求消息补齐一份接收者从未见过的原文。<a id="cite-12" href="https://arxiv.org/abs/2510.03215v2">C2C，§3</a><sup class="citation"><a href="#ref-12" aria-label="参考文献 12">12</a></sup></p>
+<p>如果两边看到不同证据，逐 token 对应就不好用了。XKV 对两边 cache 分别池化，再融合成跨层记忆，让接收端各位置查询并获得自己的 KV 更新。这样，B 的状态参与决定如何吸收 A 的证据。论文实际测试了跨家族模型对，不过各设置需要拟合通信模块，并非换一个新模型就能直接使用。<a id="cite-14" href="https://arxiv.org/abs/2608.20617v1">XKV，§3–4</a><sup class="citation"><a href="#ref-14" aria-label="参考文献 14">14</a></sup></p>
+<p>另一条互补路线，是先问 B 需要哪些证据。9 月的 CacheBack 根据接收者的问题，对发送端已有状态中的位置打分、选择片段；无关问题替代真实问题的消融会明显损害其一组结果。不过，论文实际交接连续输入行，再由接收者重新 prefill，并非直接移植 KV；其中原文位置还可由 token ID 精确恢复。这使它成为一个很清楚的例子：<strong>按接收需求选对内容，可以与选用哪种传输载体分开。</strong> 当前实验题量较小，也缺少同样选取片段的文本对照，因此收益不能全部归于连续编码。<a id="cite-27" href="https://arxiv.org/abs/2609.32046v1">CacheBack，§3–4、附录 C.3</a><sup class="citation"><a href="#ref-27" aria-label="参考文献 27">27</a></sup></p>
+<p>模型数量增多以后，也已有超越单对桥接的探索。C2C 既组合了独立训练的传入桥，也评估了多发送者、多接收者的共享空间原型；XBridge 展示了两个已训练传入桥的组合。这些结果说明共享接口和模块组合有可行路径。目前这些实验所支持的是已知端点及其模块的组合，不能顺手扩展成未经适配的新模型都懂同一种语言。<a href="https://arxiv.org/abs/2510.03215v2">C2C，附录 A.5</a><sup class="citation"><a href="#ref-12" aria-label="参考文献 12">12</a></sup>；<a id="cite-7" href="https://arxiv.org/abs/2608.11676v2">XBridge，附录 C.3</a><sup class="citation"><a href="#ref-7" aria-label="参考文献 7">7</a></sup></p>
+<p>还有一类方法直接训练“该发什么”。Interlat 先训练接收者读计划状态，再固定接收者，训练更短的 latent 生成过程；压缩目标同时考虑答案和接收行为。DiffMAS 则在共享主干的角色接力上做任务适配。后者与相同监督数据的文本系统比较时，部分任务仍有增益，也有任务打平。这提醒我们把接口收益与任务训练收益分开。<a id="cite-6" href="https://arxiv.org/abs/2511.09149v5">Interlat，§3–5</a><sup class="citation"><a href="#ref-6" aria-label="参考文献 6">6</a></sup>；<a id="cite-17" href="https://arxiv.org/abs/2604.21794v1">DiffMAS，§3–4、Table 4</a><sup class="citation"><a href="#ref-17" aria-label="参考文献 17">17</a></sup></p>
+<p>从这些设计看，训练建立的不是抽象的“向量含义”，而是一个使用关系：在这些输入和任务上，B 应当如何让 A 的状态影响自己的回答。</p>
+<h2 id="section-6">传过去的是输入的表示，还是已经算出的结果？</h2>
+<p>接口能读懂以后，还有一件事要确认：发送者到底算到了哪里。</p>
+<p>A 对文档做一次 prefill，就能留下每个输入位置的状态。这些状态已经经过多层计算，包含上下文关系，但不能笼统等同于 A 完成一次长推理之后的状态。假如文档没有直接写负责人，而是给出几条任职、代理和生效日期规则，A 可能还需要后续计算才能得到答案。</p>
+<p>对于因果 Transformer，这个区别有一个很具体的来源。某个 prompt 位置的状态只能依赖截至该位置的输入。随后生成的草稿没有反向改写这些旧位置；保存了完整 prompt cache，也没有自动保存后来发生的全部计算。草稿位置的状态则能够依赖此前草稿步骤。</p>
+<p>因此，省掉发送者解码，可能同时省掉一部分原本会发生的计算。接收者随后需要自己完成它，或者接口训练需要让发送者用更短的连续过程完成它。这解释了为何只比较“文字有多少 token、latent 有多少位置”，不足以判断是否提供了相同帮助。</p>
+<p>Draft-KV 的草稿位置、Interlat 训练的短 latent 生成过程，以及只读取原文 prefill 的缓存桥，恰好处于这条区别的不同位置。前者把已经产生的推理状态交给 B；后两者分别尝试学习更短的计算，或让 B 从原文的另一种表示中获益。<a id="cite-24" href="https://arxiv.org/abs/2609.34754v1">Draft-KV，§3</a><sup class="citation"><a href="#ref-24" aria-label="参考文献 24">24</a></sup>；<a href="https://arxiv.org/abs/2511.09149v5">Interlat，§4</a><sup class="citation"><a href="#ref-6" aria-label="参考文献 6">6</a></sup>；<a href="https://arxiv.org/abs/2510.03215v2">C2C，§3</a><sup class="citation"><a href="#ref-12" aria-label="参考文献 12">12</a></sup></p>
+<p>这里没有一种状态永远更好。直接提取负责人可能不需要长草稿；复杂规则组合可能受益于额外计算。需要比较的是 B 收到的可用帮助，以及获得这份帮助的总代价。</p>
+<h2 id="section-7">有些信息，保留文字反而更合适</h2>
+<p>我们的例子里，“负责人”是一种关系，而 <code>Neral-7</code> 和“林岚”是具体标识。接收者既要理解关系，也要精确恢复名字。</p>
+<p>如果把文档压成一个很小的连续瓶颈，训练可能保留“某项目有负责人”这种结构，却丢掉低频字符串。相反，直接保留 token 能提供精确的词汇身份，但 B 仍要解释上下文。这两种需求可以分工。</p>
+<p>XBridge 就采用混合接口：发送者一次 prefill 后，同时交出上下文状态和原始上下文 token；词汇映射将完整上下文放进接收者的嵌入前缀，学习到的 cross-attention 再提供状态增益。它绕过了发送者的自回归摘要生成，却没有绕过原文。在一组 HotpotQA 消融中，仅状态通道的 F1 为 30.3，仅词汇通道为 56.5，两者结合达到 78.8，支持这种互补性。<a href="https://arxiv.org/abs/2608.11676v2">XBridge，§3–4</a><sup class="citation"><a href="#ref-7" aria-label="参考文献 7">7</a></sup></p>
+<p>这个结果不意味着连续信道在原理上不能传名字。有限精度向量当然可以编码字符串；问题在于训练有没有教会接收者稳定恢复它，以及为此需要多大预算。保留现成的词汇协议，是一种务实的工程选择。</p>
+<p>SDE 也保留文字，并在对应位置附加相邻状态的差分；ThoughtComm 则提取多代理状态中的共享与私有结构，生成个性化 soft prefix。它们分别强调增量变化和信息分工，不应被笼统归为“把所有文字都删除”。尤其“多个代理共享某个潜变量”描述的是依赖结构，本身并不保证这个变量表达的判断正确。<a id="cite-11" href="https://arxiv.org/abs/2506.19209v2">SDE，§3</a><sup class="citation"><a href="#ref-11" aria-label="参考文献 11">11</a></sup>；<a id="cite-5" href="https://arxiv.org/abs/2510.20733v1">ThoughtComm，§3–4</a><sup class="citation"><a href="#ref-5" aria-label="参考文献 5">5</a></sup></p>
+<h2 id="section-8">怎样知道 B 真用了 A 传来的内容？</h2>
+<p>现在假设 B 答对了“林岚”。仅凭这个结果，还不能判断它是否读懂消息：它可能原本就知道，也可能训练时学会了经常猜这个答案。</p>
+<p>更有说服力的做法，是更换文档中的负责人，保持问题与接收接口不变，观察答案是否跟着变。或者把另一份文档产生的消息换进来，比较正确配对、错误配对和不接收消息三种情况。</p>
+<p>记三种条件的准确率为 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mi>M</mi></msub><mo separator="true">,</mo><msub><mi>A</mi><mi>D</mi></msub><mo separator="true">,</mo><msub><mi>A</mi><mn>0</mn></msub></mrow><annotation encoding="application/x-tex">A_M,A_D,A_0</annotation></semantics></math></span>，便有</p>
+<div class="math-block" tabindex="0" role="region" aria-label="公式，可横向滚动"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>A</mi><mi>M</mi></msub><mo>−</mo><msub><mi>A</mi><mn>0</mn></msub><mo>=</mo><mo stretchy="false">(</mo><msub><mi>A</mi><mi>M</mi></msub><mo>−</mo><msub><mi>A</mi><mi>D</mi></msub><mo stretchy="false">)</mo><mo>+</mo><mo stretchy="false">(</mo><msub><mi>A</mi><mi>D</mi></msub><mo>−</mo><msub><mi>A</mi><mn>0</mn></msub><mo stretchy="false">)</mo><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">A_M-A_0=(A_M-A_D)+(A_D-A_0).</annotation></semantics></math></span></div>
+<p>左边是系统相对无消息的总提升；右边第一项是当前样本正确配对的价值，第二项是即使消息来自别处仍产生的变化。这只是算术分解，不自动把两项解释成纯粹的因果机制。错误消息可能伤害 B；于是很大的配对差，也可能来自 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>A</mi><mi>D</mi></msub></mrow><annotation encoding="application/x-tex">A_D</annotation></semantics></math></span> 太低。三项都应当看。</p>
+<p>两篇因果审计把这个问题落到了实际接口上。它们尽量保持 cache 的长度、位置、掩码等条件，改变消息属于哪个样本；结果显示，“消息有影响”“正确配对有帮助”“另一个代理比自己多算一次更有价值”可以给出不同答案。<a id="cite-22" href="https://arxiv.org/abs/2607.26773v1">Do Latent Channels Actually Communicate?</a><sup class="citation"><a href="#ref-22" aria-label="参考文献 22">22</a></sup>；<a id="cite-23" href="https://arxiv.org/abs/2608.04893v2">When Does Latent Communication Pay?</a><sup class="citation"><a href="#ref-23" aria-label="参考文献 23">23</a></sup></p>
+<p>后一篇还有一个重要的正结果：用随机字符串生成接收者没见过的私有实体映射时，正确 cache 能把检索准确率提高到很高水平，主设置达到 100%。然而在若干共享问题的自然任务上，正确与错配 cache 的差异很小。合起来看，同一条通道能够承载私有事实，却不代表它在每种任务上都贡献了同样多的新内容。实验交接的是包含 prompt 的完整缓存，因此也不能把全部功劳归给后来生成的 latent thought。<a href="https://arxiv.org/abs/2608.04893v2">When Does Latent Communication Pay?，§4–5</a><sup class="citation"><a href="#ref-23" aria-label="参考文献 23">23</a></sup></p>
+<p>Draft-KV 给出了另一种积极答案。发送者先实际生成草稿，再抽取草稿位置的 KV，接收者通过训练过的侧向注意力读取。其训练先要求从消息重建内容，再训练任务使用，并约束错配消息的伤害；跨家族实验和正确／错配对照显示了内容相关的收益。这里交接的是发送者已经完成的草稿计算，发送者仍然生成离散文字，还要额外抽取状态，因而这个结果主要支持“有用的读取”，而非“省掉草稿生成”。<a href="https://arxiv.org/abs/2609.34754v1">Draft-KV，§3–5</a><sup class="citation"><a href="#ref-24" aria-label="参考文献 24">24</a></sup></p>
+<p>这也是为什么把向量送给一个额外 probe、发现 probe 能恢复答案，还不够。probe 有自己的训练和读出能力；真正要使用消息的是 B。反过来，清零 cache 导致崩溃，也可能只是破坏了 B 期待的输入分布。</p>
+<p>对于私有文档，最有意义的问题始终是：B 缺少的那条事实，是否通过这条接口可靠改变了它的答案？“私有”在这里仅表示输入没有直接交给 B，并不表示消息具备隐私保护。缓存仍可能携带原文信息。关于完整性，已有攻击研究也明确区分：认证可以发现交接后的篡改，却不能证明合法发送者给出的状态可信。<a id="cite-25" href="https://arxiv.org/abs/2606.28958v1">When Latent Agents Lie，§5–8</a><sup class="citation"><a href="#ref-25" aria-label="参考文献 25">25</a></sup></p>
+<p>还要检查整个系统的行为。10 月 1 日更新的安全研究，在冻结代理、训练连接的设置中发现，即使用正常数学任务训练接口，也可能提高系统对有害请求的顺从程度。端点权重没变，端到端函数却变了。这是对部分学习型接口的直接风险证据，不能推广成所有连续信道都不安全；也意味着“基础模型已经对齐”不能代替接口接入后的评估。<a id="cite-29" href="https://arxiv.org/abs/2609.39788v2">Safety of Latent Communication，§4、附录 C</a><sup class="citation"><a href="#ref-29" aria-label="参考文献 29">29</a></sup></p>
+<h2 id="section-9">省下 token 以后，账应该怎么算？</h2>
+<p>连续通信最直接的时间机会，是省掉 A 写长消息的串行解码。B 也可能少处理一段文字。但新接口会增加状态提取、转换、压缩、传输和读取的成本。</p>
+<p>一个简化的部署判断是：</p>
+<div class="math-block" tabindex="0" role="region" aria-label="公式，可横向滚动"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mtext>省下的发送端解码与接收端处理时间</mtext><mo>&gt;</mo><mtext>新增的编码、传输、注入与同步时间</mtext><mi mathvariant="normal">.</mi></mrow><annotation encoding="application/x-tex">\text{省下的发送端解码与接收端处理时间}
+&gt;
+\text{新增的编码、传输、注入与同步时间}.</annotation></semantics></math></span></div>
+<p>这是单次请求关键路径的整理式，不是普遍速度定理；能够并行的阶段不能机械相加，实际批处理和硬件也会改变各项。跨设备时，还需要考虑消息字节数、可用带宽和同步等待。</p>
+<p>训练和适配则是另一笔生命周期账：如果都折算为相同口径的费用，可以写成“总成本 = 一次性适配费用 + 使用次数 × 每次请求费用”。使用次数越多，适配越可能值得；但训练的 GPU 小时不能直接摊进用户看到的单次请求延迟。</p>
+<p>字节数尤其容易被“token-free”遮住。一个 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>4096</mn></mrow><annotation encoding="application/x-tex">4096</annotation></semantics></math></span> 维 BF16 向量有 <span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>8192</mn></mrow><annotation encoding="application/x-tex">8192</annotation></semantics></math></span> 字节。它占一个序列位置，不等于它只占一个 token ID 的传输空间。完整 KV 的近似大小则是</p>
+<div class="math-block" tabindex="0" role="region" aria-label="公式，可横向滚动"><span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><msub><mi>B</mi><mrow><mi>K</mi><mi>V</mi></mrow></msub><mo>=</mo><mn>2</mn><mi>L</mi><mi>T</mi><msub><mi>H</mi><mrow><mi>K</mi><mi>V</mi></mrow></msub><msub><mi>d</mi><mi>h</mi></msub><mi>b</mi><mo separator="true">,</mo></mrow><annotation encoding="application/x-tex">B_{KV}=2LTH_{KV}d_hb,</annotation></semantics></math></span></div>
+<p>其中 2 表示 K 与 V，<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>L</mi></mrow><annotation encoding="application/x-tex">L</annotation></semantics></math></span> 是层数，<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>T</mi></mrow><annotation encoding="application/x-tex">T</annotation></semantics></math></span> 是位置数，<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>H</mi><mrow><mi>K</mi><mi>V</mi></mrow></msub></mrow><annotation encoding="application/x-tex">H_{KV}</annotation></semantics></math></span> 是 KV 头数，<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>d</mi><mi>h</mi></msub></mrow><annotation encoding="application/x-tex">d_h</annotation></semantics></math></span> 是头维度，<span class="katex"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>b</mi></mrow><annotation encoding="application/x-tex">b</annotation></semantics></math></span> 是每个数的字节数。这是张量存储的直接记账，还没包括序列化等开销。</p>
+<p>压缩于是成为自然的下一步，但目标应该与接收有关。把发送者 hidden state 重建得很像，不保证保留了“林岚”这条答案关键事实；保留所有细节也可能浪费大量容量。</p>
+<p>CondenseFlow 用学习到的探针，把不断增长的 KV 历史汇聚成固定槽位，并以注意力输出重建训练压缩器。它体现的是一种有用取舍：让接收端近似读到原本会读到的东西，同时接受一定质量损失。论文的一组长轮次实验中，缓存大幅缩小，实际总时间下降约 20%；这两个比例并不相同。<a id="cite-18" href="https://aclanthology.org/2026.findings-acl.669/">CondenseFlow，§3–4</a><sup class="citation"><a href="#ref-18" aria-label="参考文献 18">18</a></sup></p>
+<p>另一个更直接的例子来自 OBF：对新引入的 prompt cache 做选择和残差补偿，整条 relay 的数据量约减少到原来的五分之一，但所报告快速版本的端到端时间略有增加。少传数据和更快完成，在单设备环境下完全可能分开。<a id="cite-19" href="https://arxiv.org/abs/2604.13349v3">When Less Latent Leads to Better Relay，附录 I</a><sup class="citation"><a href="#ref-19" aria-label="参考文献 19">19</a></sup></p>
+<p>新的稀疏编码工作还展示了一个视觉语言通信 codec 的输出可以大幅压缩。但其高压缩倍率以原始 FP32 稠密输出为分母；它没有与同码率的量化、低秩方案完整比较。因此，有价值的可压缩性证据，也需要和“优于哪种传输方案”分开。<a id="cite-31" href="https://arxiv.org/abs/2608.10198v1">Post-Hoc Sparse Coding，§3–4、附录 A</a><sup class="citation"><a href="#ref-31" aria-label="参考文献 31">31</a></sup></p>
+<p>持续耦合的设计又有另一笔账。Mixture of Thoughts 在解码过程中持续运行选中的专家并交换状态；Bicameral Model 让两个模型在每个生成位置按因果顺序双向耦合。这些接口可以组合计算能力，却不能因为最终只展示一份回答，就把其他模型的计算删掉。<a id="cite-4" href="https://arxiv.org/abs/2509.21164v1">Mixture of Thoughts，§3、附录 C</a><sup class="citation"><a href="#ref-4" aria-label="参考文献 4">4</a></sup>；<a id="cite-10" href="https://arxiv.org/abs/2605.11167v1">Bicameral Model，§2–3</a><sup class="citation"><a href="#ref-10" aria-label="参考文献 10">10</a></sup></p>
+<p>因此，质量、串行解码步数、prefill 时间、通信字节和训练成本需要分别报告。不同论文采用不同任务、模型和预算，把各自的最高加速倍数排成一条进步曲线，没有共同的分母。</p>
+<h2 id="section-10">回到最初的问题</h2>
+<p>A 读过文档，B 收到问题。要让 B 利用 A 的内部状态，可以依靠共同词汇坐标，把概率转成 B 的嵌入；可以在兼容模型之间交接记忆；也可以训练一个桥，让 B 通过自己的查询、层结构和输出目标读取 A 的计算。需要精确名字时，保留词汇通道与连续状态一起工作也是合理选择。</p>
+<p>这些方法的共同点，是把原来由自然语言承担的可读性，分配给词汇锚点、模型兼容性、读取结构和训练。连续表示的存储容量只是材料；接收者能稳定恢复什么、用它做什么，才决定通信的价值。</p>
+<p>对于 <code>Neral-7</code>，最好的消息未必是最完整的文档状态，也未必是最短的向量。它需要在 B 已知问题的条件下，保住负责人这条信息，并让 B 的计算准确地取出它。若 A 还不知道 B 将问什么，就必须保存更广的内容，或者留下可继续查询的记忆。</p>
+<p>这给出了一个具体答案：绕过文字以后，模型依然需要协议。协议不一定由人可读的句子构成，但必须把发送者算出的状态，变成接收者能够可靠使用的条件。现有工作已经展示了多种建立这种关系的方法；判断一种接口是否合适，应该从信息分工、读取机制和完整成本开始。</p>
+<section class="references" aria-label="阅读与参考"><h2 id="section-11">阅读与参考</h2>
+<p>以下列出支撑本文的 32 篇阅读材料，按它们在论证中的角色分组，而非按模型性能排序。版本截至 2026 年 10 月 4 日；年份区间表示初稿至所引版本。阅读覆盖正文方法、实验及相关技术附录，未独立复现实验。Coconut、CCoT 是单模型背景，综述提供分类参照，均不作为独立跨代理实验的证据。未在此注明已发表会议的条目按预印本引用。</p>
+<h3>表示与读取接口</h3>
+<ol>
+<li id="ref-1"><a href="https://arxiv.org/abs/2310.06272v2">Let Models Speak Ciphers: Multiagent Debate through Embeddings</a>. 2023–2024，v2，ICLR 2024。CIPHER。 <a class="reference-back" href="#cite-1" aria-label="返回正文引用 1">↩ 正文</a></li>
+<li id="ref-2"><a href="https://arxiv.org/abs/2401.02412v1">LLM Augmented LLMs: Expanding Capabilities through Composition</a>. 2024，v1。CALM。 <a class="reference-back" href="#cite-2" aria-label="返回正文引用 2">↩ 正文</a></li>
+<li id="ref-3"><a href="https://arxiv.org/abs/2501.14082v2">Communicating Activations Between Language Model Agents</a>. 2025，v2，ICML 2025。 <a class="reference-back" href="#cite-3" aria-label="返回正文引用 3">↩ 正文</a></li>
+<li id="ref-4"><a href="https://arxiv.org/abs/2509.21164v1">Mixture of Thoughts: Learning to Aggregate What Experts Think, Not Just What They Say</a>. 2025，v1。 <a class="reference-back" href="#cite-4" aria-label="返回正文引用 4">↩ 正文</a></li>
+<li id="ref-5"><a href="https://arxiv.org/abs/2510.20733v1">Thought Communication in Multiagent Collaboration</a>. 2025，v1，NeurIPS 2025。 <a class="reference-back" href="#cite-5" aria-label="返回正文引用 5">↩ 正文</a></li>
+<li id="ref-6"><a href="https://arxiv.org/abs/2511.09149v5">Enabling Agents to Communicate Entirely in Latent Space</a>. 2025–2026，v5，ACL 2026。Interlat。 <a class="reference-back" href="#cite-6" aria-label="返回正文引用 6">↩ 正文</a></li>
+<li id="ref-7"><a href="https://arxiv.org/abs/2608.11676v2">XBridge: Entity-Grounded Latent Bridge for Heterogeneous LLM Communication</a>. 2026，v2。 <a class="reference-back" href="#cite-7" aria-label="返回正文引用 7">↩ 正文</a></li>
+<li id="ref-8"><a href="https://arxiv.org/abs/2608.13317v1">StateBridge: Training-free Hidden-state Alignment for Latent Communication in LLM Multi-Agent Systems</a>. 2026，v1。 <a class="reference-back" href="#cite-8" aria-label="返回正文引用 8">↩ 正文</a></li>
+<li id="ref-9"><a href="https://arxiv.org/abs/2602.15382v3">Vision Wormhole: Latent-Space Communication in Heterogeneous Multi-Agent Systems</a>. 2026，v3。 <a class="reference-back" href="#cite-9" aria-label="返回正文引用 9">↩ 正文</a></li>
+<li id="ref-10"><a href="https://arxiv.org/abs/2605.11167v1">The Bicameral Model: Bidirectional Hidden-State Coupling Between Parallel Language Models</a>. 2026，v1。 <a class="reference-back" href="#cite-10" aria-label="返回正文引用 10">↩ 正文</a></li>
+<li id="ref-11"><a href="https://arxiv.org/abs/2506.19209v2">Augmenting Multi-Agent Communication with State Delta Trajectory</a>. 2025，v2，EMNLP 2025。 <a class="reference-back" href="#cite-11" aria-label="返回正文引用 11">↩ 正文</a></li>
+</ol>
+<h3>缓存交接、异构映射与计算复用</h3>
+<ol start="12">
+<li id="ref-12"><a href="https://arxiv.org/abs/2510.03215v2">Cache-to-Cache: Direct Semantic Communication Between Large Language Models</a>. 2025–2026，v2，ICLR 2026。C2C。 <a class="reference-back" href="#cite-12" aria-label="返回正文引用 12">↩ 正文</a></li>
+<li id="ref-13"><a href="https://arxiv.org/abs/2511.20639v4">Latent Collaboration in Multi-Agent Systems</a>. 2025–2026，v4。LatentMAS。 <a class="reference-back" href="#cite-13" aria-label="返回正文引用 13">↩ 正文</a></li>
+<li id="ref-14"><a href="https://arxiv.org/abs/2608.20617v1">Dual-Cache Latent Space Communication between Heterogeneous Language Models</a>. 2026，v1。XKV。 <a class="reference-back" href="#cite-14" aria-label="返回正文引用 14">↩ 正文</a></li>
+<li id="ref-15"><a href="https://arxiv.org/abs/2510.03346v3">KVComm: Enabling Efficient LLM Communication through Selective KV Sharing</a>. 2025–2026，v3，ICLR 2026。 <a class="reference-back" href="#cite-15" aria-label="返回正文引用 15">↩ 正文</a></li>
+<li id="ref-16"><a href="https://arxiv.org/abs/2510.12872v2">KVCOMM: Online Cross-context KV-cache Communication for Efficient LLM-based Multi-agent Systems</a>. 2025，v2，NeurIPS 2025。 <a class="reference-back" href="#cite-16" aria-label="返回正文引用 16">↩ 正文</a></li>
+<li id="ref-17"><a href="https://arxiv.org/abs/2604.21794v1">Learning to Communicate: Toward End-to-End Optimization of Multi-Agent Language Systems</a>. 2026，v1。DiffMAS。 <a class="reference-back" href="#cite-17" aria-label="返回正文引用 17">↩ 正文</a></li>
+</ol>
+<h3>压缩与单模型背景</h3>
+<ol start="18">
+<li id="ref-18"><a href="https://aclanthology.org/2026.findings-acl.669/">CondenseFlow: Scalable Latent Space Collaboration via Semantic Compression for Multi-Agent Systems</a>. 2026，Findings of ACL 正式版本。 <a class="reference-back" href="#cite-18" aria-label="返回正文引用 18">↩ 正文</a></li>
+<li id="ref-19"><a href="https://arxiv.org/abs/2604.13349v3">When Less Latent Leads to Better Relay: Information-Preserving Compression for Latent Multi-Agent LLM Collaboration</a>. 2026，v3。OBF。 <a class="reference-back" href="#cite-19" aria-label="返回正文引用 19">↩ 正文</a></li>
+<li id="ref-20"><a href="https://arxiv.org/abs/2412.06769v4">Training Large Language Models to Reason in a Continuous Latent Space</a>. 2024–2026，v4；工作发表于 COLM 2025，本文采用后续 v4。Coconut，单模型背景。 <a class="reference-back" href="#cite-20" aria-label="返回正文引用 20">↩ 正文</a></li>
+<li id="ref-21"><a href="https://arxiv.org/abs/2412.13171v1">Compressed Chain of Thought: Efficient Reasoning through Dense Representations</a>. 2024，v1。CCoT，单模型背景。 <a class="reference-back" href="#cite-21" aria-label="返回正文引用 21">↩ 正文</a></li>
+</ol>
+<h3>内容使用、可靠性与分类参照</h3>
+<ol start="22">
+<li id="ref-22"><a href="https://arxiv.org/abs/2607.26773v1">Do Latent Channels Actually Communicate? A Causal Audit of Latent Multi-Agent LLM</a>. 2026，v1。 <a class="reference-back" href="#cite-22" aria-label="返回正文引用 22">↩ 正文</a></li>
+<li id="ref-23"><a href="https://arxiv.org/abs/2608.04893v2">When Does Latent Communication Pay? A Causal Audit of Relayed KV Caches in Multi-Agent LLMs</a>. 2026，v2。 <a class="reference-back" href="#cite-23" aria-label="返回正文引用 23">↩ 正文</a></li>
+<li id="ref-24"><a href="https://arxiv.org/abs/2609.34754v1">Draft-KV: Learning Useful Latent Communication Between Language Models</a>. 2026，v1，预印本。 <a class="reference-back" href="#cite-24" aria-label="返回正文引用 24">↩ 正文</a></li>
+<li id="ref-25"><a href="https://arxiv.org/abs/2606.28958v1">When Latent Agents Lie: KV-Cache Integrity in Multi-Agent LLM Collaboration</a>. 2026，v1。 <a class="reference-back" href="#cite-25" aria-label="返回正文引用 25">↩ 正文</a></li>
+<li id="ref-26"><a href="https://arxiv.org/abs/2606.05711v3">Beyond Tokens: A Unified Framework for Latent Communication in LLM-based Multi-Agent Systems</a>. 2026，v3，综述。具体机制与实验结论以对应原论文为准。</li>
+</ol>
+<h3>补充的近期问题与证据</h3>
+<ol start="27">
+<li id="ref-27"><a href="https://arxiv.org/abs/2609.32046v1">Receiver-Conditioned Latent Communication gives 94% CacheBack</a>. 2026 年 9 月 25 日，v1。接收需求与证据选择。 <a class="reference-back" href="#cite-27" aria-label="返回正文引用 27">↩ 正文</a></li>
+<li id="ref-28"><a href="https://arxiv.org/abs/2609.11365v1">Portable Semantics, Private Dialects: Reuse and Negative Transfer in Latent Communication Between Language-Model Cells</a>. 2026 年 9 月 10 日，v1。可控任务上的跨训练实例迁移。 <a class="reference-back" href="#cite-28" aria-label="返回正文引用 28">↩ 正文</a></li>
+<li id="ref-29"><a href="https://arxiv.org/abs/2609.39788v2">Safety of Latent Communication in Multi-Agent Systems</a>. 2026 年 10 月 1 日，v2。冻结端点下的接口安全。 <a class="reference-back" href="#cite-29" aria-label="返回正文引用 29">↩ 正文</a></li>
+<li id="ref-30"><a href="https://arxiv.org/abs/2609.00891v1">CacheBridge: Efficient Cross-Model KV Cache Transfer</a>. 2026 年 9 月 1 日，v1。同家族缓存复用与面向读取的拟合。 <a class="reference-back" href="#cite-30" aria-label="返回正文引用 30">↩ 正文</a></li>
+<li id="ref-31"><a href="https://arxiv.org/abs/2608.10198v1">Post-Hoc Sparse Coding of Latent Communication Between Vision-Language Model Agents</a>. 2026 年 8 月 10 日，v1。既有 codec 输出的压缩。 <a class="reference-back" href="#cite-31" aria-label="返回正文引用 31">↩ 正文</a></li>
+<li id="ref-32"><a href="https://arxiv.org/abs/2606.13594v1">See What I See, Know What I Think: Dense Latent Communication Across Heterogeneous Agents</a>. 2026 年 6 月 11 日提交，v1。同家族不同规模模型的稠密缓存对齐与证据传递，作为相关正向证据阅读；不将其计算估算混入正文的实测速度比较。</li>
+</ol>
+</section></article><a class="back-to-top" href="#main">返回文章开头 ↑</a></main><footer class="footer wrap" lang="en"><p>© 2026 Xiang Ding</p><div><a href="./">Notes</a><span>·</span><a href="../index.html">Home</a></div></footer></body></html>

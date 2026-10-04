@@ -1,0 +1,39 @@
+/* Static, pre-rendered long-form article. No external scripts or font requests. */
+.latent-article{max-width:800px;padding-top:40px;padding-bottom:50px}
+.latent-article .article-head{padding:28px 0 32px}
+.latent-article h1{font-family:system-ui,-apple-system,"Noto Sans CJK SC",sans-serif;font-size:clamp(29px,4vw,39px);line-height:1.5;letter-spacing:-.025em;font-weight:650;margin:15px 0 20px;text-wrap:pretty}
+.latent-article .dek{font-size:16px;line-height:1.9}
+.article-meta{display:flex;gap:12px;align-items:center;color:var(--muted);font-size:12px;margin-bottom:0}
+.article-toc{margin:28px 0 42px;padding:18px 22px;background:#f3f5f4;border:1px solid var(--line);border-radius:4px;font-size:14px}
+.article-toc summary{cursor:pointer;font-weight:600;padding:3px 0;min-height:30px}
+.article-toc ol{display:grid;grid-template-columns:1fr 1fr;gap:4px 26px;padding-left:23px;margin:14px 0 2px}
+.article-toc li{padding:4px 0;line-height:1.65;break-inside:avoid}
+.article-toc a{text-decoration:none}
+.latent-prose{font-family:system-ui,-apple-system,"Noto Sans CJK SC",sans-serif;font-size:16px;line-height:1.95;overflow-wrap:anywhere;color:var(--ink)}
+.latent-prose p{margin:0 0 24px}
+.latent-prose h2{font-family:inherit;font-size:25px;font-weight:620;line-height:1.6;letter-spacing:-.01em;margin:56px 0 22px;padding-top:12px;border-top:1px solid var(--line);scroll-margin-top:22px}
+.latent-prose h3{font-size:18px;line-height:1.7;margin:30px 0 15px}
+.latent-prose strong{font-weight:650}
+.latent-prose a{overflow-wrap:anywhere;text-decoration-color:#9caeb5}
+.latent-prose code{font-size:.88em;background:#f1f3f2;border-radius:3px;padding:2px 4px}
+.math-block{max-width:100%;overflow-x:auto;padding:18px 12px;margin:28px 0 30px;background:#f7f8f7;border-left:2px solid #a6b9bf;overscroll-behavior-inline:contain}
+.latent-prose math{font-size:1.04em;font-family:"STIX Two Math","Cambria Math",math}
+.math-block math{min-width:max-content;margin:0 auto;font-size:1.06em}
+.math-block:focus-visible,.table-scroll:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.table-scroll{max-width:100%;overflow-x:auto;margin:28px 0 0;overscroll-behavior-inline:contain;border:1px solid var(--line);border-radius:3px}
+.table-scroll table{border-collapse:collapse;width:100%;min-width:680px;font-size:13px;line-height:1.75;text-align:left}
+.table-scroll caption{text-align:left;padding:13px 16px;font-weight:600;background:#f3f5f4;caption-side:top}
+.table-scroll th,.table-scroll td{padding:13px 15px;border-bottom:1px solid var(--line);vertical-align:top}
+.table-scroll th{background:#f3f5f4;font-weight:600}
+.table-scroll tr:last-child td{border-bottom:0}
+.table-scroll th:first-child,.table-scroll td:first-child{min-width:155px}
+.table-hint{font-size:11px;color:var(--muted);margin:7px 0 28px!important}
+.citation{font-size:10px;margin-left:3px;line-height:0}
+.citation a{text-decoration:none}
+.references{font-size:13px;line-height:1.9;color:var(--muted)}
+.references ol{padding-left:28px}
+.references li{padding:5px 0 11px;scroll-margin-top:22px}
+.reference-back{font-size:11px;white-space:nowrap;margin-left:5px}
+.back-to-top{display:inline-block;margin-top:35px;font-size:13px}
+@media(max-width:680px){.latent-article{padding-top:26px}.latent-article h1{font-size:29px;line-height:1.5}.article-toc{padding:14px 18px;margin:24px 0 32px}.article-toc ol{grid-template-columns:1fr;gap:3px}.latent-prose{font-size:16px;line-height:1.95}.latent-prose h2{font-size:23px;margin-top:40px}.math-block{padding:16px 10px}.math-block math{font-size:.95em}.references{font-size:13px}}
+@media print{.article-toc,.back-link,.back-to-top{display:none}.latent-article{max-width:none}.math-block,.table-scroll{overflow:visible}.table-scroll table{min-width:0}.latent-prose h2{break-after:avoid}.math-block{break-inside:avoid}}
