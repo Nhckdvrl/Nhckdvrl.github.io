@@ -211,7 +211,11 @@ export function createSpritePet(doc = document, win = window) {
     const dy = event.clientY - rect.top - rect.height / 2;
     if (Math.hypot(dx, dy) < rect.width * .16) { stopLooking(); return; }
     const target = lookDirection(dx, dy);
-    if (target === pendingLook || (kind === 'look' && target === lookPosition)) return;
+    if (kind === 'look' && target === lookPosition) {
+      cancel(); // Keep this pose; invalidate any stale debounce or return route.
+      return;
+    }
+    if (target === pendingLook) return;
     if (lookDebounce !== null) win.clearTimeout(lookDebounce);
     pendingLook = target;
     lookDebounce = win.setTimeout(() => {
