@@ -13,7 +13,7 @@ export class CanvasPetRenderer {
     this.light=new THREE.Vector3(-.4,.65,.8).normalize();this.fill=new THREE.Vector3(.7,.2,.4).normalize();
     this.color=new THREE.Color();this.caches=new WeakMap();this.textures=new WeakMap();
   }
-  setPixelRatio(ratio){this.ratio=Math.min(ratio,1.5);}
+  setPixelRatio(ratio){this.ratio=Math.min(ratio,1.25);}
   setClearColor(){}
   setSize(w,h){this.domElement.width=Math.max(1,Math.round(w*this.ratio));this.domElement.height=Math.max(1,Math.round(h*this.ratio));this.pixels=this.context.createImageData(this.domElement.width,this.domElement.height);this.depth=new Float32Array(this.domElement.width*this.domElement.height);}
   dispose(){this.caches=new WeakMap();this.textures=new WeakMap();}

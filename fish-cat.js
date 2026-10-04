@@ -1,5 +1,5 @@
 import * as THREE from './assets/vendor/three.module.min.js';
-import { CanvasPetRenderer } from './fish-cat-canvas.js?v=fishcat3';
+import { CanvasPetRenderer } from './fish-cat-canvas.js?v=fishcat4';
 
 // Original procedural sculpture, interpreted from the supplied fish-cat reference.
 // Geometry, painted face, and lighting are local; no model/CDN/tracking requests.
@@ -95,8 +95,9 @@ export function createFishCat(button, { paused = false, onHello = () => {} } = {
   lock(pet,[[-.33,1.00,.39],[-.81,.82,.69],[-.93,-.15,.72],[-.59,-.43,.76]],.29,.50);
   // The tilted midnight beret and its rim sit behind the fringe.
   const hat = new THREE.Group(); hat.position.set(.08,1.01,-.12); hat.rotation.z=-.13; pet.add(hat);
-  ellipsoid(hat,dark,[0,0,0],[.86,.13,.62]);
-  ellipsoid(hat,dark,[.01,.17,-.05],[.91,.25,.65]);
+  ellipsoid(hat,dark,[0,0,0],[.88,.105,.64]);
+  const felt = new THREE.MeshStandardMaterial({ color: 0x283045, roughness: .8 });
+  ellipsoid(hat,felt,[.01,.155,-.05],[.86,.30,.63]);
   ellipsoid(hat,dark,[-.13,.39,-.12],[.08,.04,.08]);
   // Satin ribbon tails, flower, and two crossed hairpins.
   ellipsoid(pet,dark,[1.02,.26,-.09],[.13,.43,.055],.4);
@@ -144,13 +145,14 @@ export function createFishCat(button, { paused = false, onHello = () => {} } = {
   const bubbles=new THREE.Group();scene.add(bubbles);
   const bubbleMat=new THREE.MeshStandardMaterial({color:0xc5dce9,transparent:true,opacity:.30,roughness:.14,metalness:.1});
   for(let i=0;i<3;i++){const b=ellipsoid(bubbles,bubbleMat,[-1.1+i*1.1,-.6,0],[.07,.07,.07]);b.visible=false;}
+  let renderCount=0;
   let frame=0,last=0, elapsed=0, helloAt=-20, nextBlink=4.5, blinkUntil=0, currentFace='open';
   let hoverX=0,hoverY=0,turn=0,targetTurn=0,drag=null,moved=false,inView=true,disposed=false,contextLost=false;
   const baseAngle=-.13;
   function setFace(name){if(currentFace!==name){faceMat.map=textures[name];currentFace=name;}}
   function render(time=0) {
     frame=0;if(disposed||contextLost)return;
-    if(!paused && time-last < (software ? 80 : 32)){if(inView&&!document.hidden)frame=requestAnimationFrame(render);return;}
+    if(!paused && time-last < (software ? 125 : 32)){if(inView&&!document.hidden)frame=requestAnimationFrame(render);return;}
     const dt=Math.min((time-last)/1000,.12)||0;last=time;if(!paused)elapsed+=dt;
     const h=elapsed-helloAt, greeting=h>=0&&h<2.6;
     turn+=(targetTurn-turn)*.12;
@@ -166,11 +168,14 @@ export function createFishCat(button, { paused = false, onHello = () => {} } = {
     setFace(greeting?'happy':(!paused&&elapsed<blinkUntil?'blink':'open'));
     bubbles.children.forEach((b,i)=>{b.visible=!paused&&greeting&&h>i*.25;if(b.visible){const p=h-i*.25;b.position.set(-1.20+i*1.02,-.15+p*.57,0);b.scale.setScalar(.04+i*.017);b.material.opacity=Math.max(0,.32-p*.1);}});
     shadow.scale.x=1-(paused?0:Math.sin(elapsed*1.7)*.035);
+    const renderStart=performance.now();
     renderer.render(scene,camera);
+    const stats=button.closest('.pet-dock').dataset;
+    stats.frame=String(++renderCount); stats.renderMs=(performance.now()-renderStart).toFixed(1); stats.paused=String(paused); stats.inView=String(inView);
     if(!paused&&inView&&!document.hidden)frame=requestAnimationFrame(render);
   }
   function schedule(){if(!frame&&!disposed&&!contextLost){last=performance.now();frame=requestAnimationFrame(render);}}
-  function resize(){const r=button.getBoundingClientRect();renderer.setSize(Math.max(1,r.width),Math.max(1,r.height),false);schedule();}
+  function resize(){const r=button.getBoundingClientRect();renderer.setSize(Math.max(1,r.width),Math.max(1,r.height),false);if(!contextLost)renderer.render(scene,camera);schedule();}
   const resizeObserver=new ResizeObserver(resize);resizeObserver.observe(button);
   const intersectionObserver=new IntersectionObserver(entries=>{inView=entries[0].isIntersecting;if(inView)schedule();else if(frame){cancelAnimationFrame(frame);frame=0;}},{threshold:.01});intersectionObserver.observe(button);
   function hello(){onHello();if(contextLost)return;if(paused){setFace('happy');renderer.render(scene,camera);setTimeout(()=>{if(!disposed){setFace('open');renderer.render(scene,camera);}},1000);}else{helloAt=elapsed;schedule();}}
