@@ -1,185 +1,133 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Xiang Ding — Master's student at Nagoya University working on NLP, large language models, reasoning, agents, and interpretability." />
-  <title>Xiang Ding | Nagoya University</title>
-  <link rel="preconnect" href="https://avatars.githubusercontent.com" />
-  <link rel="stylesheet" href="./style.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Xiang Ding — Master's student at Nagoya University working on language models, reasoning, agents, and interpretability.">
+  <title>Xiang Ding — Research</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+  <script defer src="./script.js"></script>
 </head>
 <body>
-  <header class="site-header">
-    <div class="container nav-wrap">
-      <a class="brand" href="#top">Xiang Ding</a>
-      <nav aria-label="Primary navigation">
-        <a href="#about">About</a>
-        <a href="#news">News</a>
-        <a href="#research">Research</a>
-        <a href="#projects">Projects</a>
-      </nav>
-    </div>
+  <div class="grain"></div>
+  <header class="nav-shell">
+    <a class="wordmark" href="./index.html"><span class="mark-dot"></span>Xiang Ding</a>
+    <nav>
+      <a class="active" href="./index.html">Home</a>
+      <a href="./research.html">Research</a>
+      <a href="./projects.html">Projects</a>
+      <a href="./blog/">Blog</a>
+      <a href="./about.html">About</a>
+    </nav>
+    <button class="theme-button" type="button" aria-label="Toggle color theme">◐</button>
   </header>
 
-  <main id="top">
-    <section class="hero">
-      <img class="hero-image" src="./assets/hero.jpg" alt="A temporary homepage banner photo" />
-      <div class="hero-overlay"></div>
-      <div class="container hero-inner">
-        <div class="hero-copy">
-          <p class="eyebrow">Natural Language Processing · Large Language Models</p>
-          <h1>Xiang Ding <span>向鼎</span></h1>
-          <p class="subtitle">
-            Master's student at the Graduate School of Informatics,
-            <strong>Nagoya University</strong>.
-          </p>
-          <div class="hero-links">
-            <a class="button button-primary" href="https://github.com/Nhckdvrl" target="_blank" rel="noreferrer">GitHub</a>
-            <a class="button button-ghost" href="#projects">Research Projects</a>
-          </div>
+  <main>
+    <section class="home-hero wrap">
+      <div class="hero-copy reveal">
+        <p class="eyebrow">Nagoya, Japan · 2026</p>
+        <h1>I study how language models <em>reason, communicate, and learn.</em></h1>
+        <p class="hero-intro">
+          I'm <strong>Xiang Ding (向鼎)</strong>, a master's student at Nagoya University.
+          I work on LLM reasoning, multi-agent systems, interpretability, and agentic learning.
+        </p>
+        <div class="hero-actions">
+          <a class="pill dark" href="./research.html">Explore my research <span>↗</span></a>
+          <a class="pill" href="./blog/">Read notes <span>↗</span></a>
+        </div>
+      </div>
+
+      <div class="portrait-stage reveal">
+        <div class="photo-frame">
+          <img class="portrait" src="./assets/profile.jpg"
+               onerror="this.onerror=null;this.src='https://avatars.githubusercontent.com/u/86974750?v=4';"
+               alt="Xiang Ding">
+          <div class="photo-caption"><span>01</span><span>research / systems / experiments</span></div>
         </div>
 
-        <div class="profile-card">
-          <img class="avatar" src="https://avatars.githubusercontent.com/u/86974750?v=4" alt="Xiang Ding" />
-          <div>
-            <strong>Xiang Ding</strong>
-            <p>Nagoya University</p>
-            <p>NLP · LLMs · Agents</p>
-          </div>
+        <figure class="character-sticker sticker-a">
+          <img src="./assets/character-1.png" alt="" onerror="this.parentElement.remove()">
+        </figure>
+        <figure class="character-sticker sticker-b">
+          <img src="./assets/character-2.png" alt="" onerror="this.parentElement.remove()">
+        </figure>
+
+        <div class="orbit-label">NLP<br>LLMs<br>Agents</div>
+      </div>
+    </section>
+
+    <section class="ticker" aria-label="Research interests">
+      <div>
+        <span>multi-agent reasoning</span><i>✦</i>
+        <span>interpretability</span><i>✦</i>
+        <span>agentic learning</span><i>✦</i>
+        <span>evaluation</span><i>✦</i>
+        <span>language models</span><i>✦</i>
+        <span>multi-agent reasoning</span><i>✦</i>
+        <span>interpretability</span><i>✦</i>
+      </div>
+    </section>
+
+    <section class="wrap home-section reveal">
+      <div class="section-label"><span>02</span> Now</div>
+      <div class="now-layout">
+        <h2>Questions I'm currently<br><em>obsessed with.</em></h2>
+        <div class="question-list">
+          <a href="./research.html#communication" class="question-row">
+            <span class="q-num">01</span>
+            <div><strong>Communication before conclusion</strong><p>How does information order change collective reasoning?</p></div>
+            <span class="arrow">↗</span>
+          </a>
+          <a href="./research.html#mechanisms" class="question-row">
+            <span class="q-num">02</span>
+            <div><strong>Mechanisms behind reasoning</strong><p>Why do failures emerge, and how are they recovered?</p></div>
+            <span class="arrow">↗</span>
+          </a>
+          <a href="./research.html#agents" class="question-row">
+            <span class="q-num">03</span>
+            <div><strong>Agents that keep learning</strong><p>What changes when tools, memory, and feedback enter the loop?</p></div>
+            <span class="arrow">↗</span>
+          </a>
         </div>
       </div>
     </section>
 
-    <div class="container page-grid">
-      <div class="main-column">
-        <section id="about" class="section">
-          <p class="section-kicker">About</p>
-          <h2>Hi, I'm Xiang.</h2>
-          <p>
-            I am a master's student in Informatics at Nagoya University. My research interests
-            broadly lie in natural language processing and large language models, especially
-            reasoning, multi-agent systems, interpretability, and agentic learning.
-          </p>
-          <p>
-            I enjoy turning broad questions about model behavior into reproducible experiments,
-            and building systems that help us understand where current language models succeed,
-            fail, and improve.
-          </p>
-        </section>
-
-        <section id="news" class="section">
-          <p class="section-kicker">News</p>
-          <h2>Updates</h2>
-          <div class="news-list">
-            <div class="news-item">
-              <time>Oct 2026</time>
-              <p>Launched this personal homepage. More research updates are coming soon.</p>
-            </div>
-            <div class="news-item">
-              <time>2026</time>
-              <p>Started my master's studies at the Graduate School of Informatics, Nagoya University.</p>
-            </div>
-          </div>
-        </section>
-
-        <section id="research" class="section">
-          <p class="section-kicker">Research</p>
-          <h2>What I'm interested in</h2>
-          <div class="interest-grid">
-            <article class="interest-card">
-              <span class="index">01</span>
-              <h3>LLM Reasoning</h3>
-              <p>Understanding and improving how language models solve complex reasoning problems.</p>
-            </article>
-            <article class="interest-card">
-              <span class="index">02</span>
-              <h3>Multi-Agent Systems</h3>
-              <p>Studying communication, collaboration, disagreement, and decision making among agents.</p>
-            </article>
-            <article class="interest-card">
-              <span class="index">03</span>
-              <h3>Interpretability</h3>
-              <p>Investigating mechanisms behind model behavior and the structure of internal reasoning.</p>
-            </article>
-            <article class="interest-card">
-              <span class="index">04</span>
-              <h3>Agentic Learning</h3>
-              <p>Building learning systems that use tools, memory, interaction, and feedback effectively.</p>
-            </article>
-          </div>
-        </section>
-
-        <section id="projects" class="section">
-          <p class="section-kicker">Selected work</p>
-          <h2>Projects</h2>
-
-          <article class="project">
-            <div class="project-meta">Research · Multi-Agent Reasoning</div>
-            <h3>Evidence-first deliberation</h3>
-            <p>
-              Exploring how the order and structure of information sharing affect collective
-              reasoning and decision making in multi-agent LLM systems.
-            </p>
-            <div class="tags"><span>LLM</span><span>Reasoning</span><span>Multi-Agent</span></div>
-          </article>
-
-          <article class="project">
-            <div class="project-meta">Research · Interpretability</div>
-            <h3>Understanding reasoning behavior</h3>
-            <p>
-              Experimental studies of when reasoning succeeds, fails, or changes under different
-              model and inference conditions.
-            </p>
-            <div class="tags"><span>Interpretability</span><span>Evaluation</span><span>Mechanisms</span></div>
-          </article>
-
-          <article class="project">
-            <div class="project-meta">Engineering · Agents</div>
-            <h3>Kirakira Agent</h3>
-            <p>
-              A long-running agent runtime exploring memory, tools, proactive interaction,
-              multi-channel sessions, and persistent execution.
-            </p>
-            <div class="project-actions">
-              <a href="https://github.com/Nhckdvrl/kirakira-agent" target="_blank" rel="noreferrer">View on GitHub ↗</a>
-            </div>
-          </article>
-        </section>
+    <section class="wrap home-section reveal">
+      <div class="section-label"><span>03</span> Selected</div>
+      <div class="feature-grid">
+        <a class="feature-card feature-large" href="./research.html#communication">
+          <div class="feature-top"><span>Research direction</span><span>2026</span></div>
+          <h3>Evidence before opinions.</h3>
+          <p>Studying how the structure and timing of communication alter decisions in multi-agent LLM systems.</p>
+          <div class="feature-link">Open research page ↗</div>
+        </a>
+        <a class="feature-card feature-dark" href="https://github.com/Nhckdvrl/kirakira-agent" target="_blank" rel="noreferrer">
+          <div class="feature-top"><span>Engineering</span><span>GitHub</span></div>
+          <h3>Kirakira Agent</h3>
+          <p>A long-running agent runtime for memory, tools, proactive interaction and persistent sessions.</p>
+          <div class="feature-link">View repository ↗</div>
+        </a>
       </div>
+    </section>
 
-      <aside class="sidebar">
-        <div class="side-card">
-          <p class="side-label">Affiliation</p>
-          <p><strong>Graduate School of Informatics</strong><br />Nagoya University<br />Nagoya, Japan</p>
+    <section class="wrap home-section latest-note reveal">
+      <div class="section-label"><span>04</span> Notes</div>
+      <a class="note-preview" href="./blog/hello.html">
+        <div>
+          <p class="mono">04 OCT 2026 · META</p>
+          <h2>Why I wanted a research homepage<br>that doesn't look like a CV.</h2>
         </div>
-
-        <div class="side-card">
-          <p class="side-label">Interests</p>
-          <ul>
-            <li>Natural Language Processing</li>
-            <li>Large Language Models</li>
-            <li>Reasoning & Agents</li>
-            <li>Interpretability</li>
-          </ul>
-        </div>
-
-        <div class="side-card">
-          <p class="side-label">Links</p>
-          <ul class="link-list">
-            <li><a href="https://github.com/Nhckdvrl" target="_blank" rel="noreferrer">GitHub ↗</a></li>
-            <li><span>Google Scholar · coming soon</span></li>
-            <li><span>CV · coming soon</span></li>
-          </ul>
-        </div>
-      </aside>
-    </div>
+        <span class="big-arrow">↗</span>
+      </a>
+    </section>
   </main>
 
-  <footer>
-    <div class="container footer-inner">
-      <p>© 2026 Xiang Ding.</p>
-      <p>Built with plain HTML & CSS and hosted on GitHub Pages.</p>
-    </div>
+  <footer class="footer wrap">
+    <p>© 2026 Xiang Ding</p>
+    <div><a href="https://github.com/Nhckdvrl" target="_blank" rel="noreferrer">GitHub</a><span>·</span><a href="./blog/">Blog</a></div>
   </footer>
 </body>
 </html>
