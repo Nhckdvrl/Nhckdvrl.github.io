@@ -28,7 +28,7 @@ nav a.active { color: var(--ink); text-decoration: underline; text-decoration-co
 .profile h1 span { font-family: system-ui, sans-serif; font-size: 25px; color: var(--muted); margin-left: 12px; font-weight: 400; letter-spacing: .05em; }
 .affiliation { color: var(--muted); font-size: 14px; margin-bottom: 21px; }
 .profile-copy > p:last-of-type { max-width: 660px; margin-bottom: 18px; }
-.profile-links { display: flex; gap: 25px; font-size: 14px; }
+.profile-links { display: flex; flex-wrap: wrap; gap: 12px 25px; font-size: 14px; }
 .profile-links a { text-decoration: none; }
 .avatar { width: 144px; height: 144px; object-fit: cover; border-radius: 6px; margin-top: 8px; }
 .home-block { padding: 29px 0 32px; border-top: 1px solid var(--line); }
