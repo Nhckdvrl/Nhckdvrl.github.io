@@ -28,7 +28,7 @@
   function buildParticles(ctx, Path, density = 1) {
     const rng = random(20261024);
     const particles = [];
-    for (const shape of SHAPES) {
+    for (const [part, shape] of SHAPES.entries()) {
       const outline = new Path(shape.path);
       const [x0, y0, x1, y1] = shape.bounds;
       const count = Math.round(shape.count * density);
@@ -37,7 +37,7 @@
         if (!ctx.isPointInPath(outline, x, y)) continue;
         i++;
         const color = pigment(x, y, shape.kind, rng);
-        particles.push({ x, y, color, r: .35 + rng() ** 1.5 * 1.9,
+        particles.push({ x, y, color, part, r: .35 + rng() ** 1.5 * 1.9,
           alpha: (shape.kind === 'body' ? .28 : .16) + rng() * .48,
           flex: shape.kind === 'body' ? .45 : 1, phase: rng() * TAU });
       }
@@ -46,7 +46,7 @@
     for (let i = 0; i < 55; i++) {
       const angle = rng() * TAU, r = Math.sqrt(rng()) * 3.3;
       particles.push({ x: 151 + Math.cos(angle) * r, y: -22 + Math.sin(angle) * r,
-        color: 0, r: .45 + rng() * .8, alpha: .75, flex: 0, phase: 0 });
+        color: 0, part: 6, r: .45 + rng() * .8, alpha: .75, flex: 0, phase: 0 });
     }
     return particles;
   }
@@ -75,8 +75,61 @@
     ctx.beginPath(); ctx.arc(151.7, -22.9 + breathe, .65, 0, TAU); ctx.fill();
     ctx.restore();
   }
-  // Export only in a local build/test context; the browser needs no module loader.
-  if (typeof module !== 'undefined' && module.exports) module.exports = { buildParticles, drawFish };
+  function createFishSprites(particles, makeCanvas, ratio = 1) {
+    return SHAPES.map((shape, part) => {
+      const [left, top, right, bottom] = shape.bounds;
+      const x = left - 4, y = top - 4, width = right - left + 8, height = bottom - top + 8;
+      const bitmap = makeCanvas(); bitmap.width = Math.ceil(width * ratio); bitmap.height = Math.ceil(height * ratio);
+      const paint = bitmap.getContext('2d');
+      if (!paint) return null;
+      paint.scale(ratio, ratio); paint.translate(-x, -y);
+      for (const p of particles) {
+        if (p.part !== part) continue;
+        paint.globalAlpha = p.alpha; paint.fillStyle = PALETTE[p.color];
+        paint.beginPath(); paint.arc(p.x, p.y, p.r, 0, TAU); paint.fill();
+      }
+      if (part === 6) {
+        paint.globalAlpha = .9; paint.fillStyle = '#173f57';
+        paint.beginPath(); paint.arc(151, -22, 1.7, 0, TAU); paint.fill();
+        paint.fillStyle = '#fdfaf4';
+        paint.beginPath(); paint.arc(151.7, -22.9, .65, 0, TAU); paint.fill();
+      }
+      return { bitmap, x, y, width, height, ratio, part };
+    });
+  }
+  function drawSwimmingFish(ctx, sprites, width, height, time = 0) {
+    ctx.clearRect(0, 0, width, height);
+    const scale = Math.min(width / 590, height / 550);
+    ctx.save();
+    // The entire fish follows a slow current, while a faster wave travels
+    // from its shoulders toward the tail. Fin pivots remain attached.
+    ctx.translate(width * .56 + Math.sin(time * .72) * 17 * scale,
+      height * .42 + Math.sin(time * .94) * 8 * scale);
+    ctx.scale(scale, scale);
+    ctx.rotate(-.64 + Math.sin(time * .95) * .045);
+    const finPivots = { 2: [84, -38], 3: [79, 41], 4: [-43, 28], 5: [70, -37] };
+    for (const sprite of sprites) {
+      ctx.save();
+      const pivot = finPivots[sprite.part];
+      if (pivot) {
+        const direction = sprite.part % 2 ? -1 : 1;
+        ctx.translate(pivot[0], pivot[1]);
+        ctx.rotate(Math.sin(time * 2.4) * .13 * direction);
+        ctx.translate(-pivot[0], -pivot[1]);
+      }
+      for (let x = 0; x < sprite.width; x += 8) {
+        const u = sprite.x + x, tail = Math.max(0, (110 - u) / 390);
+        const wave = (Math.sin(time * 2.4 - u * .012) - Math.sin(-u * .012)) * tail * tail * 13;
+        const slice = Math.min(8.25, sprite.width - x);
+        ctx.drawImage(sprite.bitmap, x * sprite.ratio, 0, slice * sprite.ratio, sprite.bitmap.height,
+          u, sprite.y + wave, slice, sprite.height);
+      }
+      ctx.restore();
+    }
+    ctx.restore();
+  }
+  // Shared by the browser and offline animation/pixel tests.
+  if (typeof module !== 'undefined' && module.exports) module.exports = { buildParticles, drawFish, createFishSprites, drawSwimmingFish };
   if (typeof document === 'undefined') return;
   const field = document.querySelector('[data-particle-fish]');
   if (!field) return;
@@ -87,44 +140,17 @@
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   const compact = window.matchMedia('(max-width: 680px)');
   const particles = buildParticles(ctx, Path2D, compact.matches ? .62 : 1);
-  // Paint once, then gently deform narrow slices. This keeps thousands of
-  // translucent dots without thousands of arc/fill calls on every mobile frame.
-  const sprite = document.createElement('canvas');
-  const spriteRatio = Math.min(window.devicePixelRatio || 1, 2);
-  sprite.width = 520 * spriteRatio; sprite.height = 260 * spriteRatio;
-  const paint = sprite.getContext('2d');
-  if (!paint) return;
-  paint.scale(spriteRatio, spriteRatio);
-  paint.translate(300, 130);
-  for (const p of particles) {
-    paint.globalAlpha = p.alpha; paint.fillStyle = PALETTE[p.color];
-    paint.beginPath(); paint.arc(p.x, p.y, p.r, 0, TAU); paint.fill();
-  }
-  paint.globalAlpha = .9; paint.fillStyle = '#173f57';
-  paint.beginPath(); paint.arc(151, -22, 1.7, 0, TAU); paint.fill();
-  paint.fillStyle = '#fdfaf4';
-  paint.beginPath(); paint.arc(151.7, -22.9, .65, 0, TAU); paint.fill();
+  // Prepaint each anatomical layer once: no per-frame particle generation.
+  const sprites = createFishSprites(particles, () => document.createElement('canvas'), Math.min(window.devicePixelRatio || 1, 2));
+  if (sprites.some(sprite => !sprite)) return;
   let width = 0, height = 0, time = 0, last = 0, raf = 0;
   let visible = !('IntersectionObserver' in window);
   let userPaused = false;
   try { userPaused = sessionStorage.getItem('particle-fish-paused') === '1'; } catch { /* Storage is optional. */ }
-  const paused = () => userPaused || reduced.matches;
+  let motionOptIn = false;
+  const paused = () => userPaused || (reduced.matches && !motionOptIn);
   const allowed = () => !paused() && visible && !document.hidden;
-  function draw() {
-    ctx.clearRect(0, 0, width, height);
-    ctx.save();
-    ctx.translate(width * .56, height * .43);
-    const scale = Math.min(width / 570, height / 500);
-    ctx.scale(scale, scale); ctx.rotate(-.64);
-    for (let x = 0; x < 520; x += 10) {
-      const u = x - 300, tail = Math.max(0, (100 - u) / 380);
-      const sway = (Math.sin(time * .85 + u * .008) - Math.sin(u * .008)) * tail * tail * 3;
-      const slice = Math.min(10.3, 520 - x);
-      ctx.drawImage(sprite, x * spriteRatio, 0, slice * spriteRatio, sprite.height,
-        u, -130 + sway + Math.sin(time * .55) * .45, slice, 260);
-    }
-    ctx.restore();
-  }
+  function draw() { drawSwimmingFish(ctx, sprites, width, height, time); }
   function resize() {
     const rect = canvas.getBoundingClientRect();
     width = rect.width; height = rect.height;
@@ -147,19 +173,21 @@
     if (raf) cancelAnimationFrame(raf);
     raf = 0; last = 0;
     field.dataset.motion = paused() ? 'paused' : 'playing';
-    button.textContent = paused() ? '▶ Motion' : 'Ⅱ Pause';
+    button.textContent = paused() ? '▶ Play' : 'Ⅱ Pause';
     button.setAttribute('aria-label', paused() ? 'Play particle fish animation' : 'Pause particle fish animation');
     button.setAttribute('aria-pressed', String(!paused()));
-    button.disabled = reduced.matches;
-    button.title = reduced.matches ? 'Still artwork: your reduced-motion preference is enabled' : 'Toggle particle fish animation';
+    button.disabled = false;
+    button.title = reduced.matches && !motionOptIn ? 'Reduced motion is on. Play enables animation for this artwork only.' : 'Toggle particle fish animation';
     if (allowed()) raf = requestAnimationFrame(frame);
   }
   button.addEventListener('click', () => {
-    userPaused = !userPaused;
+    const start = paused();
+    userPaused = !start;
+    motionOptIn = start;
     try { sessionStorage.setItem('particle-fish-paused', userPaused ? '1' : '0'); } catch { /* Storage is optional. */ }
     sync();
   });
-  reduced.addEventListener('change', sync);
+  reduced.addEventListener('change', () => { motionOptIn = false; sync(); });
   document.addEventListener('visibilitychange', sync);
   window.addEventListener('pagehide', () => { if (raf) cancelAnimationFrame(raf); raf = 0; });
   window.addEventListener('pageshow', sync);
