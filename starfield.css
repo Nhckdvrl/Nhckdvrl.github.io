@@ -1,7 +1,7 @@
 /* A restrained night palette around the MIT-licensed Magic UI star field. */
 :root { --paper: #0e1623; --ink: #e6ebf2; --muted: #a7b4c6; --accent: #9bc5e1; --line: #293546; }
 body { background: radial-gradient(ellipse at 85% 8%, #18283b 0, transparent 48%), radial-gradient(ellipse at 8% 75%, #142132 0, transparent 45%), var(--paper); background-attachment: fixed; isolation: isolate; }
-.starfield { position: fixed; inset: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; opacity: .8; mask-image: linear-gradient(to right, #000 0%, #0008 17%, #0003 35%, #0003 65%, #0008 83%, #000 100%); }
+.starfield { position: fixed; inset: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; opacity: .9; mask-image: linear-gradient(to right, #000 0%, #000d 17%, #000a 35%, #000a 65%, #000d 83%, #000 100%); }
 ::selection { background: #446781; color: #fff; }
 .skip-link { background: #19283a; }
 .avatar { box-shadow: 0 0 0 1px #ffffff16; }
@@ -20,7 +20,7 @@ body { background: radial-gradient(ellipse at 85% 8%, #18283b 0, transparent 48%
 .fish-art canvas { filter: brightness(1.16) saturate(.84); }
 .fish-static { mix-blend-mode: screen; opacity: .85; }
 .pet-motion, .pet-hide, .pet-show { background: #1b2a3d; color: #d9e4ef; border-color: #42556d; }
-@media (max-width: 680px) { .starfield { opacity: .5; mask-image: none; } }
+@media (max-width: 680px) { .starfield { opacity: .8; mask-image: none; } }
 @media print { :root { --ink: #252d31; --muted: #616b70; --accent: #285d73; --line: #dde3e3; } body { background: white; } .starfield { display: none; } .particle-study { background: #fbf9f3; } .fish-intro h2, .fish-index, .fish-intro > p:last-child, .fish-footer > span { color: #34464d; } .fish-static { mix-blend-mode: normal; opacity: 1; } }
 
 /* Spacious, editorial rhythm; no new cards or decorative widgets. */

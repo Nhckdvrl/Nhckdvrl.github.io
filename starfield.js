@@ -15,7 +15,7 @@
     const value = parseInt(hex.replace('#', ''), 16);
     return [(value >> 16) & 255, (value >> 8) & 255, value & 255];
   };
-  const rgb = hexToRgb('#d4e4f6');
+  const rgb = hexToRgb('#e0ebff');
   const drawParticles = () => {
     const w = window.innerWidth, h = window.innerHeight;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -27,8 +27,8 @@
     for (let i = 0; i < quantity; i++) {
       const x = Math.floor(Math.random() * w);
       const y = Math.floor(Math.random() * h);
-      const size = (Math.floor(Math.random() * 2) + 0.4) * 0.65;
-      const targetAlpha = parseFloat((Math.random() * 0.6 + 0.1).toFixed(1));
+      const size = 0.7 + Math.random() * 0.65;
+      const targetAlpha = parseFloat((Math.random() * 0.45 + 0.4).toFixed(1));
       const closestEdge = Math.min(x - size, w - x - size, y - size, h - y - size);
       const alpha = targetAlpha * Math.max(0, Math.min(1, closestEdge / 20));
       context.beginPath();
