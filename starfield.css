@@ -58,3 +58,11 @@ body { background: radial-gradient(ellipse at 85% 8%, #18283b 0, transparent 48%
 .equation { background: #172436; }
 :focus-visible { outline: 2px solid #b9d9ed; outline-offset: 5px; }
 @media print { .equation { background: #f1f4f3; } }
+/* Long-form reading surfaces must follow the dark palette too. */
+.article-toc, .math-block, .table-scroll caption, .table-scroll th,
+.latent-prose code, .article-tags li { background: #172436; }
+.article-tags li { border-color: var(--line); }
+@media print {
+  .article-toc, .math-block, .table-scroll caption, .table-scroll th,
+  .latent-prose code, .article-tags li { background: #f3f5f4; }
+}
