@@ -3,7 +3,7 @@
 /* User-selected photograph by David Monje / Unsplash. No script or canvas.
    Positive stacking: photograph at 0, readable page content above it at 1. */
 body { background: #08121e; isolation: isolate; }
-body::before { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; background: url("./assets/backgrounds/david-monje-star-sea.jpg") center center / cover no-repeat; }
+body::before { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; background: url("./assets/backgrounds/david-monje-star-sea-native.jpg") center center / cover no-repeat; }
 body > header, body > main, body > footer, body > .skip-link { position: relative; z-index: 1; }
 body > .skip-link { position: absolute; z-index: 10; }
 .profile-copy, .home-block, .page-hero, .about-copy, .project-catalog, .blog-list, .latent-article, .small-note { background: rgba(7, 15, 28, .76); box-shadow: 0 0 24px 16px rgba(7, 15, 28, .76); border-radius: 6px; }
@@ -75,3 +75,7 @@ body > .skip-link { position: absolute; z-index: 10; }
   .article-toc, .math-block, .table-scroll caption, .table-scroll th,
   .latent-prose code, .article-tags li { background: #f3f5f4; }
 }
+
+/* Keep native pixels for desktop and Retina/mobile cover crops. The smaller
+   reference is only appropriate for genuinely low-density, short screens. */
+@media screen and (max-width: 600px) and (max-height: 760px) and (max-resolution: 1dppx) { body::before { background-image: url("./assets/backgrounds/david-monje-star-sea.jpg"); } }
