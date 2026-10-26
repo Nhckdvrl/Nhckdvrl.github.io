@@ -1,18 +1,28 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="night">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Xiang Ding — Research on language model agents, single-agent and multi-agent systems, interpretability, and agentic learning.">
-  <title>Xiang Ding | Research</title>
+  <meta name="description" content="Xiang Ding — Master’s student at Nagoya University exploring NLP, language model post-training, AI agents, and multi-agent collaboration.">
+  <title>Xiang Ding | NLP, Language Models &amp; Agents</title>
+  <meta name="theme-color" content="#0e1623">
+  <link rel="canonical" href="https://nhckdvrl.github.io/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Xiang Ding | NLP, Language Models &amp; Agents">
+  <meta property="og:description" content="Xiang Ding — Master’s student at Nagoya University exploring NLP, language model post-training, AI agents, and multi-agent collaboration.">
+  <meta property="og:url" content="https://nhckdvrl.github.io/">
+  <meta property="og:image" content="https://nhckdvrl.github.io/assets/avatar.jpg">
   <link rel="stylesheet" href="./style.css?v=20261005scholar">
   <script defer src="./script.js"></script>
   <link rel="stylesheet" href="./particle-fish.css?v=20261024b">
   <script defer src="./particle-fish.js?v=20261024swim2"></script>
   <link rel="stylesheet" href="./pet.css?v=pearlfin2">
   <script type="module" src="./pet-sprite.js?v=pearlfin3"></script>
+  <link rel="stylesheet" href="./starfield.css?v=20261026a">
+  <script defer src="./starfield.js?v=20261026a"></script>
 </head>
 <body>
+<canvas class="starfield" data-starfield aria-hidden="true"></canvas>
 <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="nav-shell">
@@ -29,10 +39,10 @@
   <main id="main" class="wrap home-main">
     <section class="profile" aria-labelledby="name">
       <div class="profile-copy">
-        <p class="eyebrow">Language models · Reasoning · Agents</p>
+        <p class="eyebrow">Natural language processing · Language models · Agents</p>
         <h1 id="name">Xiang Ding</h1>
         <p>I study and build language model agents, from single-agent systems to multi-agent collaboration. My work spans reasoning and interpretability, tool use and memory, and learning from interaction.</p>
-        <div class="profile-links"><a href="./research.html">Research →</a><a href="./assets/cv/xiang-ding-cv-ja.pdf" lang="ja" type="application/pdf">CV ↗</a><a href="https://scholar.google.com/citations?user=v_AbsB0AAAAJ&amp;hl=zh-CN">Google Scholar ↗</a><a href="https://github.com/Nhckdvrl">GitHub ↗</a></div>
+        <div class="profile-links"><a href="./research.html">Research →</a><a href="./assets/cv/xiang-ding-cv-ja.pdf" lang="ja" type="application/pdf">CV (日本語) ↗</a><a href="https://scholar.google.com/citations?user=v_AbsB0AAAAJ&amp;hl=zh-CN">Google Scholar ↗</a><a href="https://github.com/Nhckdvrl">GitHub ↗</a></div>
       </div>
       <div class="profile-aside">
         <img class="avatar" src="./assets/avatar.jpg" width="160" height="160" alt="Xiang Ding’s GitHub avatar">
@@ -89,16 +99,16 @@
     <section class="home-block" aria-labelledby="research-heading">
       <div class="section-heading"><h2 id="research-heading">Research directions</h2><a href="./research.html">Research overview →</a></div>
       <div class="interest-list">
-        <article><h3><a href="./research.html#communication">Agent Systems</a></h3><p>Single-agent and multi-agent systems that use tools, maintain memory, and collaborate. Applications span personal assistants, shopping agents, and robot voice interaction.</p></article>
-        <article><h3><a href="./research.html#mechanisms">Interpretability</a></h3><p>Understanding reasoning failures and the mechanisms that enable recovery.</p></article>
-        <article><h3><a href="./research.html#agents">Agentic learning</a></h3><p>Learning from tools, memory, search, and feedback in long-running interactions.</p></article>
+        <article><h3><a href="./research.html">Language models</a></h3><p>Understanding language model capabilities and exploring how post-training can improve them.</p></article>
+        <article><h3><a href="./research.html">Agent systems</a></h3><p>Building capable agents for practical tasks and exploring how character-driven agents behave and interact.</p></article>
+        <article><h3><a href="./research.html">Multi-agent collaboration</a></h3><p>Exploring how multiple agents can communicate and work together effectively.</p></article>
       </div>
     </section>
 
     <section class="home-block" aria-labelledby="projects-heading">
       <div class="section-heading"><h2 id="projects-heading">Selected projects</h2><a href="./projects.html">All projects →</a></div>
-      <article class="project-summary"><div><h3><a href="https://github.com/Nhckdvrl/kirakira-agent">Kirakira Agent ↗</a></h3><p>A multi-channel Python assistant runtime unifying chat, proactive decisions and background skills, with scoped tool execution, committed-turn memory, and plugin/MCP hot reload.</p></div><span class="project-meta">Agent systems</span></article>
-      <article class="project-summary"><div><h3><a href="https://github.com/Nhckdvrl/ShopAgent-RL">ShopAgent RL ↗</a></h3><p>A Qwen3.5-4B shopping-agent pipeline for ShopSimulator, combining trajectory-filtered SFT, multi-turn online GRPO, and explicit evaluation acceptance checks.</p></div><span class="project-meta">Agentic RL</span></article>
+      <article class="project-summary"><div><h3><a href="https://github.com/Nhckdvrl/kirakira-agent">Kirakira Agent ↗</a></h3><p>A personal assistant that combines conversation, proactive interaction, and background work across multiple channels.</p></div><span class="project-meta">Agent systems</span></article>
+      <article class="project-summary"><div><h3><a href="https://github.com/Nhckdvrl/ShopAgent-RL">ShopAgent RL ↗</a></h3><p>A shopping-agent training pipeline that combines supervised fine-tuning with multi-turn reinforcement learning in a simulated environment.</p></div><span class="project-meta">Agentic RL</span></article>
     </section>
 
     <section class="home-block notes-block" aria-labelledby="notes-heading">

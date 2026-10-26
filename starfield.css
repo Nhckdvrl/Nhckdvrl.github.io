@@ -1,0 +1,60 @@
+/* A restrained night palette around the MIT-licensed Magic UI star field. */
+:root { --paper: #0e1623; --ink: #e6ebf2; --muted: #a7b4c6; --accent: #9bc5e1; --line: #293546; }
+body { background: radial-gradient(ellipse at 85% 8%, #18283b 0, transparent 48%), radial-gradient(ellipse at 8% 75%, #142132 0, transparent 45%), var(--paper); background-attachment: fixed; isolation: isolate; }
+.starfield { position: fixed; inset: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; opacity: .8; mask-image: linear-gradient(to right, #000 0%, #0008 17%, #0003 35%, #0003 65%, #0008 83%, #000 100%); }
+::selection { background: #446781; color: #fff; }
+.skip-link { background: #19283a; }
+.avatar { box-shadow: 0 0 0 1px #ffffff16; }
+.particle-study { background: linear-gradient(115deg, #142132c9, #1523368c 55%, #1421324d); border-color: var(--line); }
+.particle-study::before { background: #36576c; opacity: .25; }
+.fish-intro h2 { color: var(--ink); }
+.fish-intro h2 span { color: #8fc5e5; }
+.fish-index, .fish-intro > p:last-child, .fish-footer > span { color: #a7b7ca; }
+.fish-annotations path { stroke: #759eb8; opacity: .55; }
+.fish-annotations circle { fill: #a1c8df; }
+.fish-annotations text { fill: #a7bfd3; }
+.fish-annotations .fish-note { fill: #99acbf; }
+.fish-motion { background: #192b3be8; border-color: #3d5265; color: #c0d5e7; }
+.fish-motion:hover { border-color: #92b6d0; color: #eff7ff; }
+.fish-motion:focus-visible { outline-color: #b9d9ed; }
+.fish-art canvas { filter: brightness(1.16) saturate(.84); }
+.fish-static { mix-blend-mode: screen; opacity: .85; }
+.pet-motion, .pet-hide, .pet-show { background: #1b2a3d; color: #d9e4ef; border-color: #42556d; }
+@media (max-width: 680px) { .starfield { opacity: .5; mask-image: none; } }
+@media print { :root { --ink: #252d31; --muted: #616b70; --accent: #285d73; --line: #dde3e3; } body { background: white; } .starfield { display: none; } .particle-study { background: #fbf9f3; } .fish-intro h2, .fish-index, .fish-intro > p:last-child, .fish-footer > span { color: #34464d; } .fish-static { mix-blend-mode: normal; opacity: 1; } }
+
+/* Spacious, editorial rhythm; no new cards or decorative widgets. */
+.home-main { padding-top: 68px; }
+.profile-copy { max-width: 700px; }
+.profile h1 { font-size: clamp(38px, 5vw, 52px); margin-bottom: 22px; }
+.profile-copy > p { max-width: 660px; line-height: 1.85; }
+.profile-lead { color: var(--ink); font-size: 17px; margin-bottom: 14px; }
+.profile-copy > p:not(.eyebrow):not(.profile-lead) { color: var(--muted); }
+.profile-links { margin-top: 25px; gap: 10px 25px; }
+.profile-links a { display: inline-flex; min-height: 36px; align-items: center; }
+.home-block { padding-block: 34px 38px; }
+.section-heading { margin-bottom: 24px; }
+.project-summary { padding-block: 15px; }
+.project-summary + .project-summary { margin-top: 8px; }
+.project-summary h3 { margin-bottom: 8px; }
+.project-summary p + p { margin-top: 4px; }
+@media (max-width: 680px) {
+  .home-main { padding-top: 34px; }
+  .profile { grid-template-columns: 1fr 84px; gap: 18px; }
+  .profile-copy .eyebrow { font-size: 9px; line-height: 1.7; }
+  .profile h1 { font-size: 36px; margin-bottom: 18px; }
+  .profile-copy > p, .profile-copy > p:last-of-type { font-size: 15px; line-height: 1.8; }
+  .profile-links { gap: 8px 18px; margin-top: 19px; }
+  .home-block { padding-block: 27px 30px; }
+}
+@media (max-width: 420px) {
+  .profile { grid-template-columns: 1fr; }
+  .profile-aside { grid-row: 1; display: flex; align-items: center; justify-content: space-between; }
+  .profile-aside .avatar { width: 76px; height: 76px; }
+  .pet-dock { margin: -15px 0; width: 104px; }
+  .eyebrow { margin-top: 8px; }
+}
+/* Keep secondary pages in the same quiet palette. */
+.equation { background: #172436; }
+:focus-visible { outline: 2px solid #b9d9ed; outline-offset: 5px; }
+@media print { .equation { background: #f1f4f3; } }
