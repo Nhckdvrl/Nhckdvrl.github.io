@@ -1,7 +1,9 @@
 /* A restrained night palette around the MIT-licensed Magic UI star field. */
 :root { --paper: #0e1623; --ink: #e6ebf2; --muted: #a7b4c6; --accent: #9bc5e1; --line: #293546; }
-body { background: radial-gradient(ellipse at 85% 8%, #18283b 0, transparent 48%), radial-gradient(ellipse at 8% 75%, #142132 0, transparent 45%), var(--paper); background-attachment: fixed; isolation: isolate; }
-.starfield { position: fixed; inset: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; opacity: .9; mask-image: linear-gradient(to right, #000 0%, #000d 17%, #000a 35%, #000a 65%, #000d 83%, #000 100%); }
+/* First layer is a pre-rendered Magic UI texture: visible with JavaScript off,
+   independent of canvas compositing, negative z-index, masks, and fixed layers. */
+body { background-color: var(--paper); background-image: url("./assets/backgrounds/magicui-stars-v1.png"), radial-gradient(ellipse at 85% 8%, #18283b 0, transparent 48%), radial-gradient(ellipse at 8% 75%, #142132 0, transparent 45%); background-size: 960px 720px, 100% 100%, 100% 100%; background-repeat: repeat, no-repeat, no-repeat; background-position: center top; }
+.starfield { display: none; }
 ::selection { background: #446781; color: #fff; }
 .skip-link { background: #19283a; }
 .avatar { box-shadow: 0 0 0 1px #ffffff16; }
