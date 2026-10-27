@@ -71,6 +71,15 @@ nav { gap: 2px; }
 nav a { min-height: 36px; padding: 0 14px; border-radius: 999px; transition: color .2s, background-color .2s; }
 nav a:hover { color: var(--ink); text-decoration: none; }
 nav a.active { color: var(--ink); background: rgba(255, 255, 255, .06); text-decoration: none; }
+nav { position: relative; isolation: isolate; }
+nav.has-glider a.active { background: transparent; }
+.nav-glider {
+  position: absolute; top: 0; left: 0; z-index: -1; height: 36px; border-radius: 999px; pointer-events: none;
+  background: rgba(255, 255, 255, .065); box-shadow: inset 0 0 0 1px rgba(214, 228, 240, .06);
+  transition: transform .45s cubic-bezier(.3, .8, .2, 1), width .45s cubic-bezier(.3, .8, .2, 1), opacity .3s;
+}
+.nav-shell { transition: background-color .4s, box-shadow .4s, border-color .4s; }
+.nav-shell.is-scrolled { background: rgba(8, 12, 20, .82); border-color: rgba(214, 228, 240, .12); box-shadow: 0 12px 40px -20px rgba(0, 0, 0, .9); }
 
 /* ---------- Home hero ---------- */
 .home-main { padding-top: 84px; }
@@ -108,7 +117,11 @@ nav a.active { color: var(--ink); background: rgba(255, 255, 255, .06); text-dec
 
 /* ---------- Sections ---------- */
 .home-block { border-top: 0; padding-block: 44px 46px; }
-.section-heading { align-items: flex-end; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--hairline); }
+.section-heading {
+  align-items: flex-end; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 0;
+  background: linear-gradient(90deg, rgba(214, 228, 240, .24), rgba(214, 228, 240, .05) 70%, transparent) left bottom / 100% 1px no-repeat;
+  transition: background-size 1.4s cubic-bezier(.2, .7, .2, 1) .15s;
+}
 .section-heading h2 { font-size: clamp(30px, 3.6vw, 36px); line-height: 1.1; }
 .section-index { display: block; margin-bottom: 10px; color: var(--muted); font: 11px/1.4 var(--mono); letter-spacing: .16em; }
 .section-index b { color: var(--star); font-weight: 400; margin-right: 8px; }
@@ -118,7 +131,8 @@ nav a.active { color: var(--ink); background: rgba(255, 255, 255, .06); text-dec
 /* ---------- Surfaces ---------- */
 .card {
   position: relative; padding: 26px 28px; border: 1px solid var(--hairline); border-radius: var(--radius);
-  background: var(--surface); overflow: hidden; transition: border-color .3s, background-color .3s;
+  background: var(--surface); overflow: hidden;
+  transition: border-color .3s, background-color .3s, opacity .9s cubic-bezier(.2, .7, .2, 1), transform .9s cubic-bezier(.2, .7, .2, 1);
 }
 .card::before {
   content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .4s;
@@ -280,3 +294,92 @@ h1:lang(zh-CN), h2:lang(zh-CN) { font-family: var(--sans); font-weight: 600; let
 html { scroll-padding-top: 96px; }
 .latent-prose h2, .references li { scroll-margin-top: 96px; }
 @media (max-width: 680px) { html { scroll-padding-top: 20px; } .latent-prose h2, .references li { scroll-margin-top: 20px; } }
+
+/* ---------- Polish: texture, links, rhythm ---------- */
+/* Fine film grain above the sky, below content. */
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .045;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+h1, h2, h3 { text-wrap: balance; }
+p, li { text-wrap: pretty; }
+time, .badges, .note-card time, .blog-date { font-variant-numeric: tabular-nums; }
+a { text-decoration-color: rgba(155, 197, 225, .35); transition: color .2s, text-decoration-color .2s; }
+a:hover { text-decoration-color: currentColor; }
+:focus-visible { outline: 1.5px solid var(--moon); outline-offset: 4px; border-radius: 6px; }
+.pill:focus-visible, nav a:focus-visible { border-radius: 999px; outline-offset: 3px; }
+
+/* Card index in the corner */
+.card-index { position: absolute; top: 22px; right: 24px; color: rgba(167, 180, 198, .55); font: 11px/1 var(--mono); letter-spacing: .1em; transition: color .3s; }
+.card:hover .card-index { color: var(--star); }
+
+/* Spotlight border that follows the pointer */
+.card::after, .blog-row::after, .project-row.project-case::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none; opacity: 0; transition: opacity .4s;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgba(214, 228, 240, .5), transparent 65%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+.blog-row, .project-row.project-case { position: relative; }
+.card:hover::after, .blog-row:hover::after, .project-row.project-case:hover::after { opacity: 1; }
+
+/* Avatar: the orbiting star quickens under the pointer */
+.avatar-orbit::before { transition: border-color .5s; }
+.avatar-orbit:hover::before { border-color: rgba(214, 228, 240, .34); }
+.avatar-orbit .avatar { transition: transform .8s cubic-bezier(.2, .7, .2, 1); }
+.avatar-orbit:hover .avatar { transform: scale(1.025); }
+
+/* Footer details */
+.footer { flex-wrap: wrap; }
+.footer-meta { display: flex; align-items: center; gap: 18px; color: var(--muted); font: 11px/1.5 var(--mono); letter-spacing: .08em; }
+.footer-meta [data-clock]:empty { display: none; }
+.footer .to-top { display: inline-flex; align-items: center; gap: 6px; }
+.footer .to-top span { transition: transform .3s; }
+.footer .to-top:hover span { transform: translateY(-2px); }
+
+/* Reading progress on long articles */
+.read-progress { position: fixed; top: 0; left: 0; right: 0; z-index: 20; height: 2px; pointer-events: none; transform-origin: left; transform: scaleX(var(--progress, 0)); background: linear-gradient(90deg, rgba(196, 219, 234, .2), var(--moon) 70%, #fff); }
+
+/* ---------- Motion (all opt-out under reduced motion) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  /* First paint: the hero settles in, line by line. */
+  .profile-copy > *, .avatar-orbit, .page-hero > *, .article-head > *, .about-photo, .about-copy {
+    animation: settle 1s cubic-bezier(.2, .7, .2, 1) both;
+  }
+  .profile-copy > :nth-child(2), .page-hero > :nth-child(2), .article-head > :nth-child(2) { animation-delay: .08s; }
+  .profile-copy > :nth-child(3), .page-hero > :nth-child(3), .article-head > :nth-child(3), .about-photo { animation-delay: .16s; }
+  .profile-copy > :nth-child(4), .article-head > :nth-child(4), .about-copy { animation-delay: .24s; }
+  .profile-copy > :nth-child(5), .avatar-orbit { animation-delay: .32s; }
+
+  /* Sections: heading line draws in, cards follow one after another. */
+  .js-reveal .reveal:not(.is-visible) .section-heading { background-size: 0% 1px; }
+  .js-reveal .reveal:not(.is-visible) .card { opacity: 0; transform: translateY(12px); }
+  .js-reveal .reveal .card:nth-child(2) { transition-delay: 0s, 0s, .09s, .09s; }
+  .js-reveal .reveal .card:nth-child(3) { transition-delay: 0s, 0s, .18s, .18s; }
+
+  /* Cross-page fade where the browser supports it; the nav stays in place. */
+  @view-transition { navigation: auto; }
+  .nav-shell { view-transition-name: site-nav; }
+  .parallax-sky { view-transition-name: site-sky; }
+  ::view-transition-old(root) { animation: .22s ease both vt-out; }
+  ::view-transition-new(root) { animation: .38s cubic-bezier(.2, .7, .2, 1) both vt-in; }
+}
+@keyframes settle { from { opacity: 0; transform: translateY(10px); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes vt-out { to { opacity: 0; } }
+@keyframes vt-in { from { opacity: 0; transform: translateY(6px); } }
+@media (prefers-reduced-motion: reduce) {
+  .nav-glider, .nav-shell, .avatar-orbit .avatar { transition: none; }
+  .read-progress { display: none; }
+}
+@media print { body::after, .read-progress, .footer-meta { display: none; } }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+
+/* Content scrolling past the floating bar dissolves into the sky instead of peeking above it. */
+body::before {
+  content: ""; position: fixed; top: 0; left: 0; right: 0; z-index: 4; height: 92px; pointer-events: none;
+  background: linear-gradient(#0b0e15 0, rgba(11, 14, 21, .86) 30%, rgba(11, 14, 21, 0));
+  opacity: 0; transition: opacity .4s;
+}
+html.is-scrolled body::before { opacity: 1; }
+@media (max-width: 680px) { body::before { display: none; } }
+@media print { body::before { display: none; } }
