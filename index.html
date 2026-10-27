@@ -13,13 +13,15 @@
   <meta property="og:url" content="https://nhckdvrl.github.io/">
   <meta property="og:image" content="https://nhckdvrl.github.io/assets/avatar.jpg">
   <link rel="stylesheet" href="./style.css?v=20261005scholar">
-  <script defer src="./script.js"></script>
+  <script defer src="./script.js?v=20261027"></script>
   <link rel="stylesheet" href="./particle-fish.css?v=20261024b">
   <script defer src="./particle-fish.js?v=20261024swim2"></script>
   <link rel="stylesheet" href="./pet.css?v=pearlfin2">
   <script type="module" src="./pet-sprite.js?v=pearlfin3"></script>
   <link rel="stylesheet" href="./starfield.css?v=20261026g">
 <link rel="stylesheet" href="./parallax-stars.css?v=20261026g">
+  <link rel="preload" href="./assets/fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="./theme.css?v=20261027">
 </head>
 <body>
 <div class="parallax-sky" aria-hidden="true"><div class="star-tile"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--x2"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--x3"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--y2"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--x2 star-tile--y2"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--x3 star-tile--y2"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div></div>
@@ -41,12 +43,17 @@
       <div class="profile-copy">
         <p class="eyebrow">Natural language processing · Language models · Agents</p>
         <h1 id="name">Xiang Ding</h1>
-        <p class="profile-lead">I’m a first-year master’s student at Nagoya University, with research interests in natural language processing, large language models, and AI agents.</p>
+        <p class="profile-lead">I’m a first-year master’s student at <strong>Nagoya University</strong>, with research interests in natural language processing, large language models, and AI agents.</p>
         <p>I’m interested in understanding and shaping machine intelligence: developing more capable models, putting their abilities to practical use, and exploring how intelligence can take different forms through agents’ behavior, personality, and interaction. These interests guide my work on post-training and agent systems, as well as my exploration of multi-agent collaboration and character-driven agents.</p>
-        <div class="profile-links"><a href="./research.html">Research →</a><a href="./assets/cv/xiang-ding-cv-ja.pdf" lang="ja" type="application/pdf">CV (日本語) ↗</a><a href="https://scholar.google.com/citations?user=v_AbsB0AAAAJ&amp;hl=zh-CN">Google Scholar ↗</a><a href="https://github.com/Nhckdvrl">GitHub ↗</a></div>
+        <div class="pill-links">
+          <a class="pill pill--primary" href="./research.html">Research <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="pill" href="./assets/cv/xiang-ding-cv-ja.pdf" type="application/pdf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg><span lang="ja">CV (日本語)</span></a>
+          <a class="pill" href="https://scholar.google.com/citations?user=v_AbsB0AAAAJ&amp;hl=zh-CN"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></svg>Google Scholar</a>
+          <a class="pill" href="https://github.com/Nhckdvrl"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="8" r="2"/><path d="M6 7v10M18 10c0 4-6 3-11.5 7.5"/></svg>GitHub</a>
+        </div>
       </div>
       <div class="profile-aside">
-        <img class="avatar" src="./assets/avatar.jpg" width="160" height="160" alt="Xiang Ding’s GitHub avatar">
+        <div class="avatar-orbit"><img class="avatar" src="./assets/avatar.jpg" width="160" height="160" alt="Xiang Ding’s GitHub avatar"></div>
         <aside class="pet-dock" aria-label="Pearlfin, a sea-cat companion">
           <div class="pet-stage">
             <button class="pet-play" type="button" aria-label="Say hello to Pearlfin" title="Pearlfin, a sea-cat companion" disabled>
@@ -55,13 +62,12 @@
             <button class="pet-motion" type="button" aria-label="Pause Pearlfin animation" title="Pause animation" hidden>Ⅱ</button>
             <button class="pet-hide" type="button" aria-label="Hide Pearlfin" title="Hide Pearlfin" hidden>×</button>
           </div>
-          
           <p class="pet-status" role="status" aria-live="polite"></p>
         </aside>
       </div>
     </section>
 
-    <figure class="particle-study" data-particle-fish aria-labelledby="fish-title" aria-describedby="fish-description">
+    <figure class="particle-study reveal" data-particle-fish aria-labelledby="fish-title" aria-describedby="fish-description">
       <figcaption class="fish-intro">
         <p class="fish-index">Particle study / 001</p>
         <h2 id="fish-title">Small interactions.<br> <span>Emergent form.</span></h2>
@@ -84,37 +90,37 @@
       <div class="fish-footer"><span>BLUE + PEACH · A PROCEDURAL FIELD</span><button class="fish-motion" type="button" aria-label="Pause particle fish animation" aria-pressed="true" hidden>Ⅱ Pause</button></div>
     </figure>
 
-    <section class="home-block" aria-labelledby="papers-heading">
-      <div class="section-heading"><h2 id="papers-heading">Papers</h2></div>
-      <article class="project-summary">
-        <div>
-          <h3><a href="https://arxiv.org/abs/2608.01463">Where Reasoning Diverges: Localized Multi-Agent Debate for Multi-Hop Question Answering</a></h3>
-          <p>Weijun Gao, <strong>Xiang Ding</strong>, Haoyang Liu, Tiancheng Xing</p>
-          <p>arXiv preprint · 2026 · v2, August 4</p>
-          <p>Localized debate over conflicting reasoning steps, with guarded updates to a shared committed state.</p>
-          <div class="profile-links"><a href="https://arxiv.org/abs/2608.01463">arXiv ↗</a><a href="https://arxiv.org/pdf/2608.01463">PDF ↗</a></div>
-        </div>
+    <section class="home-block reveal" aria-labelledby="papers-heading">
+      <div class="section-heading"><h2 id="papers-heading"><span class="section-index"><b>01</b>PUBLICATIONS</span>Papers</h2></div>
+      <article class="card paper-card">
+        <div class="badges"><span class="badge badge--accent">PREPRINT</span><span>ARXIV · 2026</span><span>V2 · AUG 4</span></div>
+        <h3><a class="stretched" href="https://arxiv.org/abs/2608.01463">Where Reasoning Diverges: Localized Multi-Agent Debate for Multi-Hop Question Answering</a></h3>
+        <p class="authors">Weijun Gao, <strong>Xiang Ding</strong>, Haoyang Liu, Tiancheng Xing</p>
+        <p class="summary">Localized debate over conflicting reasoning steps, with guarded updates to a shared committed state.</p>
+        <div class="card-actions"><a class="pill" href="https://arxiv.org/abs/2608.01463">arXiv <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg></a><a class="pill" href="https://arxiv.org/pdf/2608.01463"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>PDF</a></div>
       </article>
     </section>
 
-    <section class="home-block" aria-labelledby="research-heading">
-      <div class="section-heading"><h2 id="research-heading">Research directions</h2><a href="./research.html">Research overview →</a></div>
+    <section class="home-block reveal" aria-labelledby="research-heading">
+      <div class="section-heading"><h2 id="research-heading"><span class="section-index"><b>02</b>DIRECTIONS</span>Research directions</h2><a href="./research.html">Research overview →</a></div>
       <div class="interest-list">
-        <article><h3><a href="./research.html">Language models</a></h3><p>Understanding language model capabilities and exploring how post-training can improve them.</p></article>
-        <article><h3><a href="./research.html">Agent systems</a></h3><p>Building capable agents for practical tasks and exploring how character-driven agents behave and interact.</p></article>
-        <article><h3><a href="./research.html">Multi-agent collaboration</a></h3><p>Exploring how multiple agents can communicate and work together effectively.</p></article>
+        <article class="card"><span class="glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M5 17l.8 2 2 .8-2 .8L5 22.6l-.8-2-2-.8 2-.8zM19 15l.6 1.4 1.4.6-1.4.6L19 19l-.6-1.4L17 17l1.4-.6z"/></svg></span><h3><a class="stretched" href="./research.html">Language models</a></h3><p>Understanding language model capabilities and exploring how post-training can improve them.</p></article>
+        <article class="card"><span class="glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="4"/><path d="M12 7V4M9 12.5v1M15 12.5v1M2 12v3M22 12v3"/><circle cx="12" cy="3" r="1"/></svg></span><h3><a class="stretched" href="./research.html">Agent systems</a></h3><p>Building capable agents for practical tasks and exploring how character-driven agents behave and interact.</p></article>
+        <article class="card"><span class="glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="18" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M10.8 7.2 6.2 15.8M13.2 7.2l4.6 8.6M7.5 18h9"/></svg></span><h3><a class="stretched" href="./research.html">Multi-agent collaboration</a></h3><p>Exploring how multiple agents can communicate and work together effectively.</p></article>
       </div>
     </section>
 
-    <section class="home-block" aria-labelledby="projects-heading">
-      <div class="section-heading"><h2 id="projects-heading">Selected projects</h2><a href="./projects.html">All projects →</a></div>
-      <article class="project-summary"><div><h3><a href="https://github.com/Nhckdvrl/kirakira-agent">Kirakira Agent ↗</a></h3><p>A personal assistant that combines conversation, proactive interaction, and background work across multiple channels.</p></div><span class="project-meta">Agent systems</span></article>
-      <article class="project-summary"><div><h3><a href="https://github.com/Nhckdvrl/ShopAgent-RL">ShopAgent RL ↗</a></h3><p>A shopping-agent training pipeline that combines supervised fine-tuning with multi-turn reinforcement learning in a simulated environment.</p></div><span class="project-meta">Agentic RL</span></article>
+    <section class="home-block reveal" aria-labelledby="projects-heading">
+      <div class="section-heading"><h2 id="projects-heading"><span class="section-index"><b>03</b>BUILDING</span>Selected projects</h2><a href="./projects.html">All projects →</a></div>
+      <div class="project-grid">
+        <article class="card"><span class="badge">AGENT SYSTEMS</span><h3><a class="stretched" href="https://github.com/Nhckdvrl/kirakira-agent">Kirakira Agent<span class="arrow" aria-hidden="true">↗</span></a></h3><p>A personal assistant that combines conversation, proactive interaction, and background work across multiple channels.</p><ul class="tags" aria-label="Technologies"><li>Python</li><li>asyncio</li><li>ReAct</li><li>MCP</li></ul></article>
+        <article class="card"><span class="badge">AGENTIC RL</span><h3><a class="stretched" href="https://github.com/Nhckdvrl/ShopAgent-RL">ShopAgent RL<span class="arrow" aria-hidden="true">↗</span></a></h3><p>A shopping-agent training pipeline that combines supervised fine-tuning with multi-turn reinforcement learning in a simulated environment.</p><ul class="tags" aria-label="Technologies"><li>Qwen3.5-4B</li><li>SFT</li><li>GRPO</li><li>veRL</li></ul></article>
+      </div>
     </section>
 
-    <section class="home-block notes-block" aria-labelledby="notes-heading">
-      <div class="section-heading"><h2 id="notes-heading">Notes</h2><a href="./blog/">All notes →</a></div>
-      <div class="note-line"><time datetime="2026-10-04">Oct 4, 2026</time><a href="./blog/how-models-read-latent-messages.html" lang="zh-CN">隐状态传过去，接收模型就能用吗？</a></div>
+    <section class="home-block notes-block reveal" aria-labelledby="notes-heading">
+      <div class="section-heading"><h2 id="notes-heading"><span class="section-index"><b>04</b>WRITING</span>Notes</h2><a href="./blog/">All notes →</a></div>
+      <article class="card note-card"><time datetime="2026-10-04">OCT 04 · 2026</time><div><a class="stretched" href="./blog/how-models-read-latent-messages.html" lang="zh-CN">隐状态传过去，接收模型就能用吗？</a><p lang="zh-CN">从词汇概率到 KV cache，理解 latent communication 的接口、训练与证据。</p></div><span class="arrow" aria-hidden="true">→</span></article>
     </section>
   </main>
 
