@@ -21,7 +21,7 @@
   <link rel="stylesheet" href="./starfield.css?v=20261026g">
 <link rel="stylesheet" href="./parallax-stars.css?v=20261026g">
   <link rel="preload" href="./assets/fonts/newsreader-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="./theme.css?v=20261027b">
+  <link rel="stylesheet" href="./theme.css?v=20261103">
 </head>
 <body>
 <div class="parallax-sky" aria-hidden="true"><div class="star-tile"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--x2"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--x3"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--y2"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--x2 star-tile--y2"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--x3 star-tile--y2"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div></div>
@@ -47,7 +47,7 @@
         <p>I’m interested in understanding and shaping machine intelligence: developing more capable models, putting their abilities to practical use, and exploring how intelligence can take different forms through agents’ behavior, personality, and interaction. These interests guide my work on post-training and agent systems, as well as my exploration of multi-agent collaboration and character-driven agents.</p>
         <div class="pill-links">
           <a class="pill pill--primary" href="./research.html">Research <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-          <a class="pill" href="./assets/cv/xiang-ding-cv-ja.pdf" type="application/pdf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg><span lang="ja">CV (日本語)</span></a>
+          <a class="pill" href="./assets/cv/xiang-ding-cv-ja.pdf?v=20261103" type="application/pdf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg><span lang="ja">CV (日本語)</span></a>
           <a class="pill" href="https://scholar.google.com/citations?user=v_AbsB0AAAAJ&amp;hl=zh-CN"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></svg>Google Scholar</a>
           <a class="pill" href="https://github.com/Nhckdvrl"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="8" r="2"/><path d="M6 7v10M18 10c0 4-6 3-11.5 7.5"/></svg>GitHub</a>
         </div>
@@ -101,8 +101,27 @@
       </article>
     </section>
 
+    <section class="home-block reveal" aria-labelledby="experience-heading">
+      <div class="section-heading"><h2 id="experience-heading"><span class="section-index"><b>02</b>EXPERIENCE</span>Experience</h2><a href="./about.html#experience">More about me →</a></div>
+      <article class="card experience-card">
+        <div class="exp-head">
+          <div>
+            <div class="badges"><span class="badge badge--accent">INTERNSHIP</span><span>ROBOTICS · SPOKEN DIALOGUE</span></div>
+            <h3><a href="https://www.noetixrobotics.com/">Noetix Robotics<span class="arrow" aria-hidden="true">↗</span></a></h3>
+            <p class="exp-role">Agent Algorithm Intern · Dialogue system for a humanoid robot</p>
+          </div>
+          <p class="exp-date"><time datetime="2026-08">AUG 2026</time> — PRESENT</p>
+        </div>
+        <ul class="exp-points">
+          <li>Helping launch the conversational agent for Bumi, the company’s humanoid robot: system design and prototypes that connect speech recognition, LLM response generation and tool calling, motion control, and state feedback.</li>
+          <li>Working on what makes two-way conversation feel natural — turn-taking, barge-in, and keeping speech in sync with the robot’s motion — and on how ASR, the LLM, TTS, and the control modules hand off to each other.</li>
+        </ul>
+        <ul class="tags" aria-label="Areas"><li>ASR</li><li>LLM</li><li>Tool calling</li><li>TTS</li><li>Motion control</li></ul>
+      </article>
+    </section>
+
     <section class="home-block reveal" aria-labelledby="research-heading">
-      <div class="section-heading"><h2 id="research-heading"><span class="section-index"><b>02</b>DIRECTIONS</span>Research directions</h2><a href="./research.html">Research overview →</a></div>
+      <div class="section-heading"><h2 id="research-heading"><span class="section-index"><b>03</b>DIRECTIONS</span>Research directions</h2><a href="./research.html">Research overview →</a></div>
       <div class="interest-list">
         <article class="card"><span class="card-index" aria-hidden="true">01</span><span class="glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M5 17l.8 2 2 .8-2 .8L5 22.6l-.8-2-2-.8 2-.8zM19 15l.6 1.4 1.4.6-1.4.6L19 19l-.6-1.4L17 17l1.4-.6z"/></svg></span><h3><a class="stretched" href="./research.html">Language models</a></h3><p>Understanding language model capabilities and exploring how post-training can improve them.</p></article>
         <article class="card"><span class="card-index" aria-hidden="true">02</span><span class="glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="4" y="7" width="16" height="12" rx="4"/><path d="M12 7V4M9 12.5v1M15 12.5v1M2 12v3M22 12v3"/><circle cx="12" cy="3" r="1"/></svg></span><h3><a class="stretched" href="./research.html">Agent systems</a></h3><p>Building capable agents for practical tasks and exploring how character-driven agents behave and interact.</p></article>
@@ -111,15 +130,23 @@
     </section>
 
     <section class="home-block reveal" aria-labelledby="projects-heading">
-      <div class="section-heading"><h2 id="projects-heading"><span class="section-index"><b>03</b>BUILDING</span>Selected projects</h2><a href="./projects.html">All projects →</a></div>
+      <div class="section-heading"><h2 id="projects-heading"><span class="section-index"><b>04</b>BUILDING</span>Selected projects</h2><a href="./projects.html">All projects →</a></div>
       <div class="project-grid">
         <article class="card"><span class="card-index" aria-hidden="true">01</span><span class="badge">AGENT SYSTEMS</span><h3><a class="stretched" href="https://github.com/Nhckdvrl/kirakira-agent">Kirakira Agent<span class="arrow" aria-hidden="true">↗</span></a></h3><p>A personal assistant that combines conversation, proactive interaction, and background work across multiple channels.</p><ul class="tags" aria-label="Technologies"><li>Python</li><li>asyncio</li><li>ReAct</li><li>MCP</li></ul></article>
         <article class="card"><span class="card-index" aria-hidden="true">02</span><span class="badge">AGENTIC RL</span><h3><a class="stretched" href="https://github.com/Nhckdvrl/ShopAgent-RL">ShopAgent RL<span class="arrow" aria-hidden="true">↗</span></a></h3><p>A shopping-agent training pipeline that combines supervised fine-tuning with multi-turn reinforcement learning in a simulated environment.</p><ul class="tags" aria-label="Technologies"><li>Qwen3.5-4B</li><li>SFT</li><li>GRPO</li><li>veRL</li></ul></article>
       </div>
     </section>
 
+    <section class="home-block reveal" aria-labelledby="community-heading">
+      <div class="section-heading"><h2 id="community-heading"><span class="section-index"><b>05</b>OPEN SOURCE</span>Open source &amp; community</h2></div>
+      <div class="project-grid">
+        <article class="card"><span class="card-index" aria-hidden="true">01</span><span class="badge">CONTRIBUTOR</span><h3><a class="stretched" href="https://github.com/Prism-Shadow/penguin-harness">PenguinHarness<span class="arrow" aria-hidden="true">↗</span></a></h3><p>An open-source framework for agent self-evolution, or recursive self-improvement: the model stays fixed while prompts, Skills, tools, and hooks improve round by round against shared benchmarks. I contribute fixes to its RSI algorithm toolkits.</p><ul class="tags" aria-label="Topics"><li>RSI</li><li>Agent harness</li><li>Skills</li><li>Benchmarks</li></ul></article>
+        <article class="card"><span class="card-index" aria-hidden="true">02</span><span class="badge">COMMUNITY</span><h3><a class="stretched" href="https://club.penguin.ooo/">Shared RSI Community<span class="arrow" aria-hidden="true">↗</span></a></h3><p>An open community co-building benchmarks, evaluations, and algorithms for recursive self-improvement, organized around a public roadmap and RFCs.</p><ul class="tags" aria-label="Topics"><li>Benchmark</li><li>Harness</li><li>Algorithm</li><li>Evaluation</li></ul></article>
+      </div>
+    </section>
+
     <section class="home-block notes-block reveal" aria-labelledby="notes-heading">
-      <div class="section-heading"><h2 id="notes-heading"><span class="section-index"><b>04</b>WRITING</span>Notes</h2><a href="./blog/">All notes →</a></div>
+      <div class="section-heading"><h2 id="notes-heading"><span class="section-index"><b>06</b>WRITING</span>Notes</h2><a href="./blog/">All notes →</a></div>
       <article class="card note-card"><time datetime="2026-10-04">OCT 04 · 2026</time><div><a class="stretched" href="./blog/how-models-read-latent-messages.html" lang="zh-CN">隐状态传过去，接收模型就能用吗？</a><p lang="zh-CN">从词汇概率到 KV cache，理解 latent communication 的接口、训练与证据。</p></div><span class="arrow" aria-hidden="true">→</span></article>
     </section>
   </main>
