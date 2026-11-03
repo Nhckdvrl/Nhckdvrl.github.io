@@ -383,3 +383,26 @@ body::before {
 html.is-scrolled body::before { opacity: 1; }
 @media (max-width: 680px) { body::before { display: none; } }
 @media print { body::before { display: none; } }
+
+/* Experience */
+.experience-card { padding: 30px 32px; }
+.exp-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; }
+.experience-card h3 { font: 400 clamp(24px, 2.6vw, 28px)/1.2 var(--display); margin: 12px 0 6px; }
+.experience-card h3 .arrow { display: inline-block; font-family: system-ui, sans-serif; font-size: .55em; margin-left: 8px; color: var(--muted); vertical-align: .2em; transition: transform .3s, color .3s; }
+.experience-card h3 a:hover .arrow { transform: translate(2px, -2px); color: var(--ink); }
+.exp-role { color: var(--muted); font-size: 14px; margin: 0; }
+.exp-date { flex: none; margin: 4px 0 0; color: var(--muted); font: 11px/1.6 var(--mono); letter-spacing: .1em; }
+.exp-points { margin: 20px 0 16px; padding-left: 18px; color: var(--muted); font-size: 14.5px; line-height: 1.75; max-width: 780px; }
+.exp-points li { margin-bottom: 8px; padding-left: 4px; }
+.exp-points li::marker { color: var(--star); content: "✦  "; font-size: 9px; }
+.project-catalog + .home-block { padding-top: 64px; }
+.about-copy .facts { margin-top: 0; border-top: 0; }
+.about-copy .facts > div { grid-template-columns: 110px minmax(0, 1fr); border-bottom-color: var(--hairline); padding: 14px 0; }
+.about-copy .facts span { font: 11px/1.9 var(--mono); letter-spacing: .06em; }
+.about-copy .facts p { margin: 0; color: var(--muted); font-size: 14.5px; }
+.about-copy .facts strong a { color: var(--ink); }
+@media (max-width: 680px) {
+  .exp-head { flex-direction: column-reverse; gap: 4px; }
+  .experience-card { padding: 22px 20px; }
+  .about-copy .facts > div { grid-template-columns: 1fr; gap: 2px; }
+}
