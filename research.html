@@ -13,7 +13,7 @@
 <meta property="og:description" content="Research by Xiang Ding on language models, post-training, AI agents, and multi-agent collaboration.">
 <meta property="og:url" content="https://nhckdvrl.github.io/research.html">
 <link rel="stylesheet" href="./parallax-stars.css?v=20261026g">
-<link rel="stylesheet" href="./theme.css?v=20261103">
+<link rel="stylesheet" href="./theme.css?v=20261103b">
 </head>
 <body>
 <div class="parallax-sky" aria-hidden="true"><div class="star-tile"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--x2"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--x3"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--y2"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--x2 star-tile--y2"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--x3 star-tile--y2"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div></div>
@@ -32,6 +32,16 @@
   </section>
     <section class="wrap home-block reveal" aria-labelledby="papers-heading">
       <div class="section-heading"><h2 id="papers-heading">Papers &amp; research outputs</h2></div>
+      <article class="project-summary">
+        <div>
+          <h3><a href="https://arxiv.org/abs/2610.36797">Language Models Keep Abandoned Analyses: Residue and Adaptation after Garden-Path Sentences</a></h3>
+          <p><strong>Xiang Ding</strong></p>
+          <p>arXiv preprint · 2026 · v1, October 27</p>
+          <p>Reading “While the man hunted the deer ran into the woods” means giving up the analysis in which “the deer” is the object of “hunted”. People who have just read such a sentence still produce more transitive structures. This paper asks whether language models also keep using an analysis they have abandoned, and what in the model carries it.</p>
+          <p>Across 24 open models from 124M to 70B parameters, a garden-path sentence leaves two traces: a residue of the abandoned analysis that raises later object attachment, and an adaptation toward the resolved structure. Activation patching separates the two: the residue is read from the noun phrase’s states computed under the object analysis, and replacing them removes almost all of it in the 32B and 70B models. Overridden statements show the same persistence.</p>
+          <div class="profile-links"><a href="https://arxiv.org/abs/2610.36797">arXiv ↗</a><a href="https://arxiv.org/pdf/2610.36797">PDF ↗</a></div>
+        </div>
+      </article>
       <article class="project-summary">
         <div>
           <h3><a href="https://arxiv.org/abs/2608.01463">Where Reasoning Diverges: Localized Multi-Agent Debate for Multi-Hop Question Answering</a></h3>
