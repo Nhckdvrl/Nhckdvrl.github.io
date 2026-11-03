@@ -84,6 +84,43 @@
   }, { passive: true });
   onScroll();
 
+  // Day / night switch. The choice is remembered; without a choice the site stays at night.
+  const root = document.documentElement;
+  const toggle = document.querySelector('.theme-toggle');
+  const themeColor = document.querySelector('meta[name="theme-color"]');
+  const applyTheme = (theme) => {
+    root.dataset.theme = theme;
+    const next = theme === 'day' ? 'night' : 'day';
+    if (toggle) {
+      toggle.setAttribute('aria-label', `Switch to ${next} mode`);
+      toggle.title = `Switch to ${next} mode`;
+    }
+    themeColor?.setAttribute('content', theme === 'day' ? '#f4f1ea' : '#0e1623');
+  };
+  if (toggle) {
+    applyTheme(root.dataset.theme === 'day' ? 'day' : 'night');
+    toggle.hidden = false;
+    toggle.addEventListener('click', () => {
+      const theme = root.dataset.theme === 'day' ? 'night' : 'day';
+      try { localStorage.setItem('xd-theme', theme); } catch (error) { /* private mode: switch for this page only */ }
+      if (reduce || !document.startViewTransition) { applyTheme(theme); return; }
+      // The new theme spreads out from the button as a widening circle.
+      const rect = toggle.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+      const radius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
+      root.classList.add('theme-switching');
+      const transition = document.startViewTransition(() => applyTheme(theme));
+      transition.ready.then(() => {
+        root.animate(
+          { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${radius}px at ${x}px ${y}px)`] },
+          { duration: 650, easing: 'cubic-bezier(.4, 0, .2, 1)', pseudoElement: '::view-transition-new(root)' },
+        );
+      }).catch(() => {});
+      transition.finished.finally(() => root.classList.remove('theme-switching'));
+    });
+  }
+
   // Local time in Nagoya, shown in the footer.
   const clocks = document.querySelectorAll('[data-clock]');
   if (clocks.length) {
