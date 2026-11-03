@@ -448,3 +448,33 @@ html.is-scrolled body::before { opacity: 1; }
   .explore-grid { grid-template-columns: 1fr; }
   .explore-card { min-height: 0; }
 }
+
+/* Experience page */
+.hero-actions { margin: 24px 0 0; display: flex; gap: 10px; flex-wrap: wrap; }
+.hero-actions .pill { color: var(--ink); text-decoration: none; }
+.edu-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.edu-card .exp-date { margin: 0 0 12px; }
+.edu-card h3 { font: 400 26px/1.2 var(--display); margin: 0 0 6px; }
+.edu-card .edu-detail { margin: 8px 0 0; color: var(--muted); font-size: 14px; line-height: 1.7; }
+.cross-note { margin: 0; color: var(--muted); font-size: 14px; }
+.about-cv { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* Explore: three across, then two */
+.explore-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.explore-card { grid-column: span 2; }
+.explore-card:nth-child(n + 4) { grid-column: span 3; }
+.js-reveal .reveal .card:nth-child(5) { transition-delay: 0s, 0s, .36s, .36s; }
+@media (max-width: 860px) {
+  .explore-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .explore-card, .explore-card:nth-child(n + 4) { grid-column: auto; }
+  .explore-card:last-child { grid-column: 1 / -1; }
+}
+@media (max-width: 680px) {
+  .edu-list, .explore-grid { grid-template-columns: 1fr; }
+  .explore-card:last-child { grid-column: auto; }
+  /* Six links: one swipeable row instead of wrapping. */
+  nav { flex-wrap: nowrap; justify-content: flex-start; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  nav::-webkit-scrollbar { display: none; }
+  nav { -webkit-mask: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 14px), transparent); mask: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 14px), transparent); }
+  nav a { flex: none; padding: 0 11px; }
+}
