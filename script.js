@@ -84,8 +84,12 @@
   }, { passive: true });
   onScroll();
 
-  // Day / night switch. The choice is remembered; without a choice the site stays at night.
+  // Day / night switch. Without a stored choice the site follows the system setting;
+  // a choice that differs from the system is remembered.
   const root = document.documentElement;
+  const systemLight = window.matchMedia('(prefers-color-scheme: light)');
+  const systemTheme = () => (systemLight.matches ? 'day' : 'night');
+  const storedTheme = () => { try { return localStorage.getItem('xd-theme'); } catch (error) { return null; } };
   const toggle = document.querySelector('.theme-toggle');
   const themeColor = document.querySelector('meta[name="theme-color"]');
   const applyTheme = (theme) => {
@@ -102,7 +106,10 @@
     toggle.hidden = false;
     toggle.addEventListener('click', () => {
       const theme = root.dataset.theme === 'day' ? 'night' : 'day';
-      try { localStorage.setItem('xd-theme', theme); } catch (error) { /* private mode: switch for this page only */ }
+      try {
+        if (theme === systemTheme()) localStorage.removeItem('xd-theme');
+        else localStorage.setItem('xd-theme', theme);
+      } catch (error) { /* private mode: switch for this page only */ }
       if (reduce || !document.startViewTransition) { applyTheme(theme); return; }
       // The new theme spreads out from the button as a widening circle.
       const rect = toggle.getBoundingClientRect();
@@ -118,6 +125,11 @@
         );
       }).catch(() => {});
       transition.finished.finally(() => root.classList.remove('theme-switching'));
+    });
+    // Follow the system live while no choice is stored.
+    systemLight.addEventListener('change', () => {
+      const stored = storedTheme();
+      if (stored !== 'day' && stored !== 'night') applyTheme(systemTheme());
     });
   }
 
