@@ -2,38 +2,18 @@
 <html lang="en" data-theme="night">
 <head>
   <meta charset="utf-8"><script>try{var t=localStorage.getItem("xd-theme");if(t!=="day"&&t!=="night")t=matchMedia("(prefers-color-scheme: light)").matches?"day":"night";document.documentElement.dataset.theme=t}catch(e){}</script><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Kirakira Agent, ShopAgent RL, and Shiori: multi-channel agent runtime engineering, supervised fine-tuning and online reinforcement learning, and a Windows visual novel launcher.">
+  <meta name="description" content="Projects by Xiang Ding: Kirakira Agent, ShopAgent RL, the Shiori galgame launcher, and the Sora character demo, plus open-source work on PenguinHarness.">
   <title>Projects — Xiang Ding</title>
   <link rel="stylesheet" href="./style.css?v=20261004c"><script defer src="./script.js?v=20261103f"></script>
-  <style>
-    .project-case { grid-template-columns: 32px minmax(0, 1fr) 116px; gap: 22px; padding-block: 34px; color: var(--ink); }
-    .project-case:hover h2 { text-decoration: none; }
-    .project-case h2 a { color: inherit; text-decoration: none; }
-    .project-case h2 a:hover { text-decoration: underline; }
-    .project-case .project-body > p { font-size: 15px; line-height: 1.75; }
-    .project-features { margin: 21px 0 20px; padding-left: 19px; color: var(--muted); font-size: 14px; line-height: 1.75; }
-    .project-features li { padding-left: 3px; margin-bottom: 12px; }
-    .project-features strong { color: var(--ink); font-weight: 600; }
-    .project-case .project-note { border-left: 2px solid var(--line); padding-left: 13px; font-size: 12px !important; margin-top: 19px !important; }
-    .project-links { display: flex; flex-wrap: wrap; gap: 9px 20px; font-size: 12px; }
-    .project-links a { text-decoration: none; }
-    .project-links a:hover { text-decoration: underline; }
-    .project-case .project-side { gap: 3px; padding-top: 3px; }
-    @media (max-width: 680px) {
-      .project-case { grid-template-columns: 24px minmax(0, 1fr); gap: 12px; padding-block: 28px; }
-      .project-case .project-side { flex-wrap: wrap; gap: 4px 13px; }
-      .project-features { padding-left: 17px; }
-    }
-  </style>
 <link rel="stylesheet" href="./starfield.css?v=20261026g">
 <meta name="theme-color" content="#0e1623">
 <link rel="canonical" href="https://nhckdvrl.github.io/projects.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Projects — Xiang Ding">
-<meta property="og:description" content="Kirakira Agent, ShopAgent RL, and Shiori: multi-channel agent runtime engineering, supervised fine-tuning and online reinforcement learning, and a Windows visual novel launcher.">
+<meta property="og:description" content="Projects by Xiang Ding: Kirakira Agent, ShopAgent RL, the Shiori galgame launcher, and the Sora character demo, plus open-source work on PenguinHarness.">
 <meta property="og:url" content="https://nhckdvrl.github.io/projects.html">
 <link rel="stylesheet" href="./parallax-stars.css?v=20261026g">
-<link rel="stylesheet" href="./theme.css?v=20261103f">
+<link rel="stylesheet" href="./theme.css?v=20261103g">
 </head>
 <body>
 <div class="parallax-sky" aria-hidden="true"><div class="star-tile"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--x2"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--x3"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--y2"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--x2 star-tile--y2"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--x3 star-tile--y2"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div></div>
@@ -48,83 +28,66 @@
   <section class="page-hero wrap">
     <p class="eyebrow">Projects / things I build</p>
     <h1>Selected projects</h1>
-    <p class="page-lead">Agent systems, learning infrastructure, and tools I use myself: a multi-channel assistant runtime, a shopping-agent training pipeline built around executable environments, and a desktop launcher for visual novels.</p>
+    <p class="page-lead">Things I build: agent systems and training pipelines for work and research, plus personal projects around games and characters.</p>
   </section>
 
-  <section class="wrap project-catalog" aria-label="Selected engineering projects">
-    <article class="project-row project-case" id="kirakira-agent" aria-labelledby="kirakira-title">
-      <div class="project-number" aria-hidden="true">01</div>
-      <div class="project-body">
-        <p class="mono">AGENT RUNTIME</p>
-        <h2 id="kirakira-title"><a href="https://github.com/Nhckdvrl/kirakira-agent">Kirakira Agent ↗</a></h2>
-        <p>A local-first Python assistant runtime connecting conversation, proactive messaging, and skill-driven background work across Web, Telegram, and QQ. Models use configurable OpenAI-compatible endpoints; sessions and runtime state live in a local workspace.</p>
-        <ul class="project-features">
-          <li><strong>Shared execution and recovery.</strong> Chat, proactive decisions, and background skills use one ReAct execution core with scoped tool grants. Tool intent is recorded before execution; unresolved side effects are flagged for reconciliation after a restart.</li>
-          <li><strong>Proactive decision checks.</strong> Explicit share/skip tools bind decisions to candidate IDs. Conversation, rule, and source-revision checks reject stale decisions before delivery.</li>
-          <li><strong>Memory and context.</strong> Append-only conversation history is separate from rolling context compaction. The selectable Akasha v1 memory path learns from committed turns, with a shared transactional cycle for live ingestion and offline replay.</li>
-          <li><strong>Plugin and MCP lifecycle.</strong> Staged publication and generation leases keep in-flight turns on their original tool snapshot while new plugin and MCP configurations are prepared and validated.</li>
-        </ul>
-        <div class="project-links" aria-label="Kirakira implementation references">
-          <a href="https://github.com/Nhckdvrl/kirakira-agent/blob/40c4277d5d01c6bc5843593a2d6679683126c8b1/agent/core/execution.py">Execution journal ↗</a>
-          <a href="https://github.com/Nhckdvrl/kirakira-agent/blob/40c4277d5d01c6bc5843593a2d6679683126c8b1/proactive_v2/loop.py#L420-L431">Decision checks ↗</a>
-          <a href="https://github.com/Nhckdvrl/kirakira-agent/blob/40c4277d5d01c6bc5843593a2d6679683126c8b1/plugins/akasha/cycle.py">Memory cycle ↗</a>
-          <a href="https://github.com/Nhckdvrl/kirakira-agent/blob/40c4277d5d01c6bc5843593a2d6679683126c8b1/agent/plugins/generation.py">Plugin lifecycle ↗</a>
+  <section class="wrap showcase" aria-label="Projects">
+      <article class="card showcase-card" id="kirakira-agent" aria-labelledby="kirakira-agent-title">
+        <figure class="showcase-media"><img src="./assets/projects/kirakira-hero.webp" width="1400" height="560" alt="Kirakira Agent banner: an empty concert stage with instruments under soft pastel lights." loading="lazy" decoding="async" style="object-position: 72% center;">
+        </figure>
+        <div class="showcase-body">
+          <span class="card-index" aria-hidden="true">01</span>
+          <span class="badge">AGENT RUNTIME</span>
+          <h2 id="kirakira-agent-title"><a class="stretched" href="https://github.com/Nhckdvrl/kirakira-agent">Kirakira Agent</a></h2>
+          <p>A local-first personal assistant that chats, reaches out on its own, and keeps working in the background across Web, Telegram, and QQ, with long-term memory built from past conversations.</p>
+          <ul class="tags" aria-label="Topics"><li>Python</li><li>ReAct</li><li>MCP</li><li>Long-term memory</li></ul>
+          <div class="card-actions"><a class="pill" href="https://github.com/Nhckdvrl/kirakira-agent"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="8" r="2"/><path d="M6 7v10M18 10c0 4-6 3-11.5 7.5"/></svg>GitHub</a></div>
         </div>
-        <p class="project-note">The <a href="https://github.com/Nhckdvrl/kirakira-agent/blob/40c4277d5d01c6bc5843593a2d6679683126c8b1/docs/engineering/akashic-review-2026-10-02.md">architecture review</a> documents upstream references to Akashic, the retained Akasha v1 algorithm, and the project's own adaptations and remaining boundaries.</p>
-      </div>
-      <div class="project-side" aria-label="Kirakira technologies"><span>Python · asyncio</span><span>ReAct · MCP</span></div>
-    </article>
-    <article class="project-row project-case" id="shopagent-rl" aria-labelledby="shopagent-title">
-      <div class="project-number" aria-hidden="true">02</div>
-      <div class="project-body">
-        <p class="mono">AGENTIC REINFORCEMENT LEARNING</p>
-        <h2 id="shopagent-title"><a href="https://github.com/Nhckdvrl/ShopAgent-RL">ShopAgent RL ↗</a></h2>
-        <p>A Chinese shopping-agent training pipeline on ShopSimulator, combining Qwen3.5-4B full-parameter supervised fine-tuning with online GRPO in veRL. The agent asks a simulated shopper for missing requirements, then searches and selects products through environment tools.</p>
-        <ul class="project-features">
-          <li><strong>Replay-verified training data.</strong> Teacher trajectories are filtered for successful terminal purchases, invalid actions, exceptions, and split overlap. Retained actions are replayed in the environment to check the resulting purchase.</li>
-          <li><strong>Assistant-only supervision.</strong> A custom Qwen3.5 dataset renders complete conversation prefixes, verifies token-prefix alignment, and masks non-assistant tokens from the SFT loss. Overlength examples are rejected rather than silently truncated.</li>
-          <li><strong>Multi-turn online RL.</strong> A custom veRL tool loop runs concurrent rollouts with isolated episode sessions in a shared simulator world. It ends on simulated purchases and returns environment-derived rewards and diagnostics.</li>
-          <li><strong>Evaluation acceptance checks.</strong> A separate validator checks exact task coverage, duplicates, terminal outcomes, exception rates, and served-model identity. Run reports distinguish infrastructure failures from policy behavior.</li>
-        </ul>
-        <div class="project-links" aria-label="ShopAgent implementation references">
-          <a href="https://github.com/Nhckdvrl/ShopAgent-RL/blob/90c99d156890f880d569891de5b4c486db8471c1/scripts/b12_build_audit_teacher_sft.py">Data audit ↗</a>
-          <a href="https://github.com/Nhckdvrl/ShopAgent-RL/blob/90c99d156890f880d569891de5b4c486db8471c1/shopagent_rl/sft/prefix_mask_dataset.py">SFT loss masks ↗</a>
-          <a href="https://github.com/Nhckdvrl/ShopAgent-RL/blob/90c99d156890f880d569891de5b4c486db8471c1/shopagent_rl/verl/agent_loop.py">GRPO tool loop ↗</a>
-          <a href="https://github.com/Nhckdvrl/ShopAgent-RL/blob/90c99d156890f880d569891de5b4c486db8471c1/scripts/b47_validate_eval_run.py">Evaluation checks ↗</a>
+      </article>
+      <article class="card showcase-card" id="shopagent-rl" aria-labelledby="shopagent-rl-title">
+        <figure class="showcase-media showcase-media--figure"><img src="./assets/projects/shopsimulator-fig1.webp" width="1800" height="865" alt="ShopSimulator overview: a shopper with a profile talks to an LLM agent, which searches and clicks through a shop environment before recommending a product." loading="lazy" decoding="async" style="object-position: center;">
+        </figure>
+        <div class="showcase-body">
+          <span class="card-index" aria-hidden="true">02</span>
+          <span class="badge">AGENTIC RL</span>
+          <h2 id="shopagent-rl-title"><a class="stretched" href="https://github.com/Nhckdvrl/ShopAgent-RL">ShopAgent RL</a></h2>
+          <p>Teaches Qwen3.5-4B to shop for a simulated customer — ask what they need, search, compare, and buy — with agentic SFT and then online GRPO. Strict success on 1,459 held-out tasks rises from 13.16% to 64.63%.</p>
+          <p class="showcase-credit">Environment figure from <a href="https://arxiv.org/abs/2601.18225">ShopSimulator</a> (Alibaba), the simulator this project trains in.</p>
+          <ul class="tags" aria-label="Topics"><li>Qwen3.5-4B</li><li>SFT</li><li>GRPO</li><li>veRL</li></ul>
+          <div class="card-actions"><a class="pill" href="https://github.com/Nhckdvrl/ShopAgent-RL"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="8" r="2"/><path d="M6 7v10M18 10c0 4-6 3-11.5 7.5"/></svg>GitHub</a></div>
         </div>
-        <p class="project-note">Experiments use simulated shopping tasks. The <a href="https://github.com/Nhckdvrl/ShopAgent-RL/blob/90c99d156890f880d569891de5b4c486db8471c1/RESULTS.md">results and caveats</a> and <a href="https://github.com/Nhckdvrl/ShopAgent-RL/blob/90c99d156890f880d569891de5b4c486db8471c1/ENGINEERING_LOG.md">engineering log</a> record evaluation failures, fixes, and limitations alongside the reported outcomes.</p>
-      </div>
-      <div class="project-side" aria-label="ShopAgent technologies"><span>Qwen3.5-4B</span><span>SFT · GRPO</span><span>veRL · vLLM</span></div>
-    </article>
-    <article class="project-row project-case" id="shiori" aria-labelledby="shiori-title">
-      <div class="project-number" aria-hidden="true">03</div>
-      <div class="project-body">
-        <p class="mono">DESKTOP APP · VISUAL NOVEL LIBRARY</p>
-        <h2 id="shiori-title"><a href="https://github.com/Nhckdvrl/shiori">Shiori <span lang="ja">栞</span> ↗</a></h2>
-        <p>A Windows launcher and library for visual novels (galgames). Point it at your game folders: it finds the games, launches each one with the setup it needs, and fills in covers, synopses, staff, and ratings from Bangumi and VNDB.</p>
-        <ul class="project-features">
-          <li><strong>Directory scanning.</strong> Recursively finds launch executables across several folders and drives, recognizes common translation-patch launchers, keeps existing studio, author, and series folder layouts, and picks up newly added games automatically.</li>
-          <li><strong>Compatibility launching.</strong> Per-game launcher and arguments, Locale Emulator for games that need a Japanese locale, emulators, and a temporary virtual disc drive for older games that check for a CD, released again when the game exits.</li>
-          <li><strong>Metadata matching.</strong> Titles, aliases, series numbers, studio, and platform are matched against Bangumi and VNDB; uncertain matches keep their candidates for review. A Bangumi personal access token unlocks entries that need a login, such as age-restricted titles; it is stored encrypted by Windows and sent only to the Bangumi API.</li>
-          <li><strong>Library and playtime.</strong> Studios, series, scenario writers, and custom tags are managed separately; playtime counts from when the game window appears, and the library can be exported.</li>
-        </ul>
-        <div class="project-links" aria-label="Shiori implementation references">
-          <a href="https://github.com/Nhckdvrl/shiori/blob/785f187a8fb751c3851104e5ca43fc2b0c224a65/src/scanner.cjs">Scanner ↗</a>
-          <a href="https://github.com/Nhckdvrl/shiori/blob/785f187a8fb751c3851104e5ca43fc2b0c224a65/src/launch.cjs">Launching ↗</a>
-          <a href="https://github.com/Nhckdvrl/shiori/blob/785f187a8fb751c3851104e5ca43fc2b0c224a65/src/disc.cjs">Virtual disc ↗</a>
-          <a href="https://github.com/Nhckdvrl/shiori/blob/785f187a8fb751c3851104e5ca43fc2b0c224a65/src/metadata.cjs">Metadata matching ↗</a>
+      </article>
+      <article class="card showcase-card" id="shiori" aria-labelledby="shiori-title">
+        <figure class="showcase-media"><img src="./assets/projects/shiori-first-run.webp" width="1400" height="803" alt="Shiori first-run screen: choose game folders on the left, connect a Bangumi token on the right." loading="lazy" decoding="async" style="object-position: left top;">
+        </figure>
+        <div class="showcase-body">
+          <span class="card-index" aria-hidden="true">03</span>
+          <span class="badge">DESKTOP APP</span>
+          <h2 id="shiori-title"><a class="stretched" href="https://github.com/Nhckdvrl/shiori">Shiori <span lang="ja">栞</span></a></h2>
+          <p>A Windows galgame launcher. Point it at your folders and it finds the games, launches each one the way it needs — Locale Emulator or a temporary virtual disc — and fills in details from Bangumi and VNDB.</p>
+          <ul class="tags" aria-label="Topics"><li>Electron</li><li>Bangumi</li><li>VNDB</li></ul>
+          <div class="card-actions"><a class="pill" href="https://github.com/Nhckdvrl/shiori"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="8" r="2"/><path d="M6 7v10M18 10c0 4-6 3-11.5 7.5"/></svg>GitHub</a></div>
         </div>
-        <p class="project-note">Version 0.5.0, released under the MIT license with installer and portable builds. Fonts, runtimes, and data sources keep their own licenses, listed in the repository’s <a href="https://github.com/Nhckdvrl/shiori/blob/785f187a8fb751c3851104e5ca43fc2b0c224a65/THIRD-PARTY-NOTICES.md">third-party notices</a>.</p>
-      </div>
-      <div class="project-side" aria-label="Shiori technologies"><span>Electron · Node.js</span><span>Windows 10/11</span><span>Bangumi · VNDB</span></div>
-    </article>
+      </article>
+      <article class="card showcase-card" id="sora" aria-labelledby="sora-title">
+        <figure class="showcase-media"><img src="./assets/projects/sora-demo.webp" width="1400" height="875" alt="Sora demo page: Niimi Sora waving beside a chat panel and expression controls." loading="lazy" decoding="async" style="object-position: 38% center;">
+        </figure>
+        <div class="showcase-body">
+          <span class="card-index" aria-hidden="true">04</span>
+          <span class="badge">INTERACTIVE DEMO</span>
+          <h2 id="sora-title"><a class="stretched" href="https://nhckdvrl.github.io/sora/">Sora <span lang="zh-CN">天色微风</span></a></h2>
+          <p>A character study of Niimi Sora from <i>9-nine-</i> that runs in the browser. Her eyes follow the cursor, she reacts to touch with a dozen expressions, and she can chat and talk back with AI-generated voice.</p>
+          <ul class="tags" aria-label="Topics"><li>StandRig</li><li>LLM chat</li><li>TTS</li></ul>
+          <div class="card-actions"><a class="pill pill--primary" href="https://nhckdvrl.github.io/sora/">Open demo <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg></a><a class="pill" href="https://github.com/Nhckdvrl/sora"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="8" r="2"/><path d="M6 7v10M18 10c0 4-6 3-11.5 7.5"/></svg>GitHub</a></div>
+        </div>
+      </article>
   </section>
 
   <section class="wrap home-block reveal" aria-labelledby="community-heading">
-    <div class="section-heading"><h2 id="community-heading">Open source &amp; community</h2></div>
+    <div class="section-heading"><h2 id="community-heading"><span class="section-index"><b>05</b>OPEN SOURCE</span>Open source &amp; community</h2></div>
     <div class="project-grid">
-      <article class="card"><span class="badge">CONTRIBUTOR</span><h3><a class="stretched" href="https://github.com/Prism-Shadow/penguin-harness">PenguinHarness<span class="arrow" aria-hidden="true">↗</span></a></h3><p>An open-source framework for agent self-evolution, or recursive self-improvement: the model stays fixed while prompts, Skills, tools, and hooks improve round by round against shared benchmarks. I contribute fixes to its RSI algorithm toolkits, such as the OPRO and APE Skill definitions.</p><ul class="tags" aria-label="Topics"><li>RSI</li><li>Agent harness</li><li>Skills</li><li>Benchmarks</li></ul></article>
-      <article class="card"><span class="badge">COMMUNITY</span><h3><a class="stretched" href="https://club.penguin.ooo/">Shared RSI Community<span class="arrow" aria-hidden="true">↗</span></a></h3><p>An open community co-building benchmarks, evaluations, and algorithms for recursive self-improvement, organized around a public roadmap and RFCs.</p><ul class="tags" aria-label="Topics"><li>Benchmark</li><li>Harness</li><li>Algorithm</li><li>Evaluation</li></ul></article>
+      <article class="card"><span class="badge">CONTRIBUTOR</span><h3><a class="stretched" href="https://github.com/Prism-Shadow/penguin-harness">PenguinHarness<span class="arrow" aria-hidden="true">↗</span></a></h3><p>An open-source framework where agents improve themselves round by round: the model stays fixed while prompts, Skills, and tools evolve. I contribute fixes to its RSI algorithm toolkits.</p><ul class="tags" aria-label="Topics"><li>RSI</li><li>Agent harness</li><li>Skills</li><li>Benchmarks</li></ul></article>
+      <article class="card"><span class="badge">COMMUNITY</span><h3><a class="stretched" href="https://club.penguin.ooo/">Shared RSI Community<span class="arrow" aria-hidden="true">↗</span></a></h3><p>An open community co-building benchmarks, evaluations, and algorithms for recursive self-improvement.</p><ul class="tags" aria-label="Topics"><li>Benchmark</li><li>Harness</li><li>Algorithm</li><li>Evaluation</li></ul></article>
     </div>
   </section>
 
