@@ -406,3 +406,7 @@ html.is-scrolled body::before { opacity: 1; }
   .experience-card { padding: 22px 20px; }
   .about-copy .facts > div { grid-template-columns: 1fr; gap: 2px; }
 }
+
+/* Several papers stack with the same rhythm as other card lists. */
+.paper-list { display: grid; gap: 14px; }
+.inner-page .home-block .project-summary + .project-summary { margin-top: 14px; }
