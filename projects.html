@@ -2,7 +2,7 @@
 <html lang="en" data-theme="night">
 <head>
   <meta charset="utf-8"><script>try{var t=localStorage.getItem("xd-theme");if(t!=="day"&&t!=="night")t=matchMedia("(prefers-color-scheme: light)").matches?"day":"night";document.documentElement.dataset.theme=t}catch(e){}</script><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Kirakira Agent and ShopAgent RL: multi-channel agent runtime engineering, supervised fine-tuning, online reinforcement learning, and evaluation infrastructure.">
+  <meta name="description" content="Kirakira Agent, ShopAgent RL, and Shiori: multi-channel agent runtime engineering, supervised fine-tuning and online reinforcement learning, and a Windows visual novel launcher.">
   <title>Projects — Xiang Ding</title>
   <link rel="stylesheet" href="./style.css?v=20261004c"><script defer src="./script.js?v=20261103f"></script>
   <style>
@@ -30,7 +30,7 @@
 <link rel="canonical" href="https://nhckdvrl.github.io/projects.html">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Projects — Xiang Ding">
-<meta property="og:description" content="Kirakira Agent and ShopAgent RL: multi-channel agent runtime engineering, supervised fine-tuning, online reinforcement learning, and evaluation infrastructure.">
+<meta property="og:description" content="Kirakira Agent, ShopAgent RL, and Shiori: multi-channel agent runtime engineering, supervised fine-tuning and online reinforcement learning, and a Windows visual novel launcher.">
 <meta property="og:url" content="https://nhckdvrl.github.io/projects.html">
 <link rel="stylesheet" href="./parallax-stars.css?v=20261026g">
 <link rel="stylesheet" href="./theme.css?v=20261103f">
@@ -48,7 +48,7 @@
   <section class="page-hero wrap">
     <p class="eyebrow">Projects / things I build</p>
     <h1>Selected projects</h1>
-    <p class="page-lead">Agent systems and learning infrastructure: a multi-channel assistant runtime, and a shopping-agent training pipeline built around executable environments.</p>
+    <p class="page-lead">Agent systems, learning infrastructure, and tools I use myself: a multi-channel assistant runtime, a shopping-agent training pipeline built around executable environments, and a desktop launcher for visual novels.</p>
   </section>
 
   <section class="wrap project-catalog" aria-label="Selected engineering projects">
@@ -95,6 +95,28 @@
         <p class="project-note">Experiments use simulated shopping tasks. The <a href="https://github.com/Nhckdvrl/ShopAgent-RL/blob/90c99d156890f880d569891de5b4c486db8471c1/RESULTS.md">results and caveats</a> and <a href="https://github.com/Nhckdvrl/ShopAgent-RL/blob/90c99d156890f880d569891de5b4c486db8471c1/ENGINEERING_LOG.md">engineering log</a> record evaluation failures, fixes, and limitations alongside the reported outcomes.</p>
       </div>
       <div class="project-side" aria-label="ShopAgent technologies"><span>Qwen3.5-4B</span><span>SFT · GRPO</span><span>veRL · vLLM</span></div>
+    </article>
+    <article class="project-row project-case" id="shiori" aria-labelledby="shiori-title">
+      <div class="project-number" aria-hidden="true">03</div>
+      <div class="project-body">
+        <p class="mono">DESKTOP APP · VISUAL NOVEL LIBRARY</p>
+        <h2 id="shiori-title"><a href="https://github.com/Nhckdvrl/shiori">Shiori <span lang="ja">栞</span> ↗</a></h2>
+        <p>A Windows launcher and library for visual novels (galgames). Point it at your game folders: it finds the games, launches each one with the setup it needs, and fills in covers, synopses, staff, and ratings from Bangumi and VNDB.</p>
+        <ul class="project-features">
+          <li><strong>Directory scanning.</strong> Recursively finds launch executables across several folders and drives, recognizes common translation-patch launchers, keeps existing studio, author, and series folder layouts, and picks up newly added games automatically.</li>
+          <li><strong>Compatibility launching.</strong> Per-game launcher and arguments, Locale Emulator for games that need a Japanese locale, emulators, and a temporary virtual disc drive for older games that check for a CD, released again when the game exits.</li>
+          <li><strong>Metadata matching.</strong> Titles, aliases, series numbers, studio, and platform are matched against Bangumi and VNDB; uncertain matches keep their candidates for review. A Bangumi personal access token unlocks entries that need a login, such as age-restricted titles; it is stored encrypted by Windows and sent only to the Bangumi API.</li>
+          <li><strong>Library and playtime.</strong> Studios, series, scenario writers, and custom tags are managed separately; playtime counts from when the game window appears, and the library can be exported.</li>
+        </ul>
+        <div class="project-links" aria-label="Shiori implementation references">
+          <a href="https://github.com/Nhckdvrl/shiori/blob/785f187a8fb751c3851104e5ca43fc2b0c224a65/src/scanner.cjs">Scanner ↗</a>
+          <a href="https://github.com/Nhckdvrl/shiori/blob/785f187a8fb751c3851104e5ca43fc2b0c224a65/src/launch.cjs">Launching ↗</a>
+          <a href="https://github.com/Nhckdvrl/shiori/blob/785f187a8fb751c3851104e5ca43fc2b0c224a65/src/disc.cjs">Virtual disc ↗</a>
+          <a href="https://github.com/Nhckdvrl/shiori/blob/785f187a8fb751c3851104e5ca43fc2b0c224a65/src/metadata.cjs">Metadata matching ↗</a>
+        </div>
+        <p class="project-note">Version 0.5.0, released under the MIT license with installer and portable builds. Fonts, runtimes, and data sources keep their own licenses, listed in the repository’s <a href="https://github.com/Nhckdvrl/shiori/blob/785f187a8fb751c3851104e5ca43fc2b0c224a65/THIRD-PARTY-NOTICES.md">third-party notices</a>.</p>
+      </div>
+      <div class="project-side" aria-label="Shiori technologies"><span>Electron · Node.js</span><span>Windows 10/11</span><span>Bangumi · VNDB</span></div>
     </article>
   </section>
 
