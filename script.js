@@ -49,6 +49,10 @@
     });
     nav.addEventListener('pointerleave', rest);
     nav.addEventListener('focusout', (event) => { if (!nav.contains(event.relatedTarget)) rest(); });
+    // On narrow screens the row scrolls; keep the current page in view.
+    if (current && nav.scrollWidth > nav.clientWidth) {
+      nav.scrollLeft = current.offsetLeft - (nav.clientWidth - current.offsetWidth) / 2;
+    }
     // Place without animating, then enable transitions.
     glider.style.transition = 'none';
     rest();
