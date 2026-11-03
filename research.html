@@ -13,7 +13,7 @@
 <meta property="og:description" content="Research by Xiang Ding on language models, post-training, AI agents, and multi-agent collaboration.">
 <meta property="og:url" content="https://nhckdvrl.github.io/research.html">
 <link rel="stylesheet" href="./parallax-stars.css?v=20261026g">
-<link rel="stylesheet" href="./theme.css?v=20261103f">
+<link rel="stylesheet" href="./theme.css?v=20261103g">
 </head>
 <body>
 <div class="parallax-sky" aria-hidden="true"><div class="star-tile"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--x2"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--x3"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--y2"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--x2 star-tile--y2"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div><div class="star-tile star-tile--x3 star-tile--y2"><div class="parallax-small"></div><div class="parallax-medium"></div><div class="parallax-large"></div></div></div>
@@ -41,26 +41,24 @@
 
     <section class="wrap home-block reveal" aria-labelledby="papers-heading">
       <div class="section-heading"><h2 id="papers-heading"><span class="section-index"><b>02</b>PUBLICATIONS</span>Papers &amp; preprints</h2></div>
-      <article class="project-summary">
-        <div>
-          <h3><a href="https://arxiv.org/abs/2610.36797">Language Models Keep Abandoned Analyses: Residue and Adaptation after Garden-Path Sentences</a></h3>
-          <p><strong>Xiang Ding</strong></p>
-          <p>arXiv preprint · 2026 · v1, October 27</p>
-          <p>Reading “While the man hunted the deer ran into the woods” means giving up the analysis in which “the deer” is the object of “hunted”. People who have just read such a sentence still produce more transitive structures. This paper asks whether language models also keep using an analysis they have abandoned, and what in the model carries it.</p>
-          <p>Across 24 open models from 124M to 70B parameters, a garden-path sentence leaves two traces: a residue of the abandoned analysis that raises later object attachment, and an adaptation toward the resolved structure. Activation patching separates the two: the residue is read from the noun phrase’s states computed under the object analysis, and replacing them removes almost all of it in the 32B and 70B models. Overridden statements show the same persistence.</p>
-          <div class="profile-links"><a href="https://arxiv.org/abs/2610.36797">arXiv ↗</a><a href="https://arxiv.org/pdf/2610.36797">PDF ↗</a></div>
-        </div>
+      <div class="paper-list">
+      <article class="card paper-card paper-card--figure">
+        <figure class="paper-figure"><img src="./assets/papers/garden-path-fig1.webp" width="902" height="558" alt="Diagram: in “While the man hunted the deer ran into the woods”, the states of “the deer” carry a residue of the abandoned object analysis, while the main clause carries an adaptation toward the resolved structure." loading="lazy" decoding="async"><figcaption>Figure 1 · Two traces a garden-path sentence leaves in a language model.</figcaption></figure>
+        <div class="badges"><span class="badge badge--accent">PREPRINT</span><span>ARXIV · 2026</span><span>V1 · OCT 27</span></div>
+        <h3><a class="stretched" href="https://arxiv.org/abs/2610.36797">Language Models Keep Abandoned Analyses: Residue and Adaptation after Garden-Path Sentences</a></h3>
+        <p class="authors"><strong>Xiang Ding</strong></p>
+        <p class="summary">After a garden-path sentence, language models keep using the analysis they gave up. Across 24 open models from 124M to 70B, this residue shapes later text, and activation patching traces it to states computed before the disambiguation.</p>
+        <div class="card-actions"><a class="pill" href="https://arxiv.org/abs/2610.36797">arXiv <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg></a><a class="pill" href="https://arxiv.org/pdf/2610.36797"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>PDF</a></div>
       </article>
-      <article class="project-summary">
-        <div>
-          <h3><a href="https://arxiv.org/abs/2608.01463">Where Reasoning Diverges: Localized Multi-Agent Debate for Multi-Hop Question Answering</a></h3>
-          <p>Weijun Gao, <strong>Xiang Ding</strong>, Haoyang Liu, Tiancheng Xing</p>
-          <p>arXiv preprint · 2026 · v2, August 4</p>
-          <p>Localized Multi-Agent Debate (LMAD) identifies the earliest conflict in agents’ reasoning and limits discussion to the relevant local segments. Guarded resolution updates a shared committed state without reopening accepted steps.</p>
-          <p>Evaluated on four multi-hop question-answering benchmarks with ten backbones from four model families. The paper reports the highest macro-averaged judge accuracy across all ten backbones among the evaluated methods.</p>
-          <div class="profile-links"><a href="https://arxiv.org/abs/2608.01463">arXiv ↗</a><a href="https://arxiv.org/pdf/2608.01463">PDF ↗</a></div>
-        </div>
+      <article class="card paper-card paper-card--figure">
+        <figure class="paper-figure"><img src="./assets/papers/lmad-fig1.webp" width="1800" height="439" alt="LMAD pipeline: parallel reasoning, align and localize the earliest conflict, local debate, guarded commit, then continue or stop." loading="lazy" decoding="async"><figcaption>Figure 1 · System overview of LMAD.</figcaption></figure>
+        <div class="badges"><span class="badge badge--accent">PREPRINT</span><span>ARXIV · 2026</span><span>V2 · AUG 4</span></div>
+        <h3><a class="stretched" href="https://arxiv.org/abs/2608.01463">Where Reasoning Diverges: Localized Multi-Agent Debate for Multi-Hop Question Answering</a></h3>
+        <p class="authors">Weijun Gao, <strong>Xiang Ding</strong>, Haoyang Liu, Tiancheng Xing</p>
+        <p class="summary">Agents debate only the earliest step where their reasoning chains disagree, and a guarded commit adds the repair to a shared state. Evaluated on four multi-hop QA benchmarks with ten backbone models.</p>
+        <div class="card-actions"><a class="pill" href="https://arxiv.org/abs/2608.01463">arXiv <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg></a><a class="pill" href="https://arxiv.org/pdf/2608.01463"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>PDF</a></div>
       </article>
+      </div>
     </section>
 
 
