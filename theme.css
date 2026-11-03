@@ -4,8 +4,8 @@
  * Fonts are self-hosted under the SIL OFL 1.1 (assets/fonts/LICENSE-*.txt):
  * Newsreader (headings) and Inter (text and small caps labels).
  */
-@font-face { font-family: "Newsreader"; font-style: normal; font-weight: 200 800; font-display: swap; src: url("./assets/fonts/newsreader-latin-opsz-normal.woff2") format("woff2-variations"), url("./assets/fonts/newsreader-latin-opsz-normal.woff2") format("woff2"); }
-@font-face { font-family: "Inter"; font-style: normal; font-weight: 100 900; font-display: swap; src: url("./assets/fonts/inter-latin-wght-normal.woff2") format("woff2-variations"), url("./assets/fonts/inter-latin-wght-normal.woff2") format("woff2"); }
+@font-face { font-family: "Newsreader"; font-style: normal; font-weight: 300 500; font-display: swap; src: url("./assets/fonts/newsreader-latin-opsz-normal.woff2") format("woff2-variations"), url("./assets/fonts/newsreader-latin-opsz-normal.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-style: normal; font-weight: 400 700; font-display: swap; src: url("./assets/fonts/inter-latin-wght-normal.woff2") format("woff2-variations"), url("./assets/fonts/inter-latin-wght-normal.woff2") format("woff2"); }
 
 :root {
   --display: "Newsreader", "Songti SC", "Noto Serif CJK SC", Georgia, serif;
@@ -363,7 +363,7 @@ a:hover { text-decoration-color: currentColor; }
   ::view-transition-old(root) { animation: .22s ease both vt-out; }
   ::view-transition-new(root) { animation: .38s cubic-bezier(.2, .7, .2, 1) both vt-in; }
 }
-@keyframes settle { from { opacity: 0; transform: translateY(10px); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes settle { from { opacity: .01; transform: translateY(10px); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
 @keyframes vt-out { to { opacity: 0; } }
 @keyframes vt-in { from { opacity: 0; transform: translateY(6px); } }
 @media (prefers-reduced-motion: reduce) {

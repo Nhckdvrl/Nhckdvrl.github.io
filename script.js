@@ -3,9 +3,12 @@
   'use strict';
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Sections fade in as they enter the viewport.
+  // Sections below the first screen fade in as they enter the viewport.
+  // Anything already on screen stays visible, so the first paint is never held back.
   const items = document.querySelectorAll('.reveal');
   if (!reduce && items.length && 'IntersectionObserver' in window) {
+    const fold = window.innerHeight;
+    items.forEach((item) => { if (item.getBoundingClientRect().top < fold) item.classList.add('is-visible'); });
     document.documentElement.classList.add('js-reveal');
     const observer = new IntersectionObserver((entries) => {
       for (const entry of entries) {
@@ -14,15 +17,21 @@
         observer.unobserve(entry.target);
       }
     }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
-    items.forEach((item) => observer.observe(item));
+    items.forEach((item) => { if (!item.classList.contains('is-visible')) observer.observe(item); });
   }
 
-  // Pointer position drives the soft spotlight on cards.
+  // Pointer position drives the soft spotlight on cards, at most once per frame.
   document.querySelectorAll('.card, .blog-row, .project-case').forEach((card) => {
+    let pending = 0, x = 0, y = 0;
     card.addEventListener('pointermove', (event) => {
-      const rect = card.getBoundingClientRect();
-      card.style.setProperty('--mx', `${event.clientX - rect.left}px`);
-      card.style.setProperty('--my', `${event.clientY - rect.top}px`);
+      x = event.clientX; y = event.clientY;
+      if (pending) return;
+      pending = requestAnimationFrame(() => {
+        pending = 0;
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty('--mx', `${x - rect.left}px`);
+        card.style.setProperty('--my', `${y - rect.top}px`);
+      });
     }, { passive: true });
   });
 
