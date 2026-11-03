@@ -478,3 +478,116 @@ html.is-scrolled body::before { opacity: 1; }
   nav { -webkit-mask: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 14px), transparent); mask: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 14px), transparent); }
   nav a { flex: none; padding: 0 11px; }
 }
+
+/* ---------- Theme switch ---------- */
+.nav-shell { justify-content: flex-start; }
+.nav-shell nav { margin-left: auto; }
+.theme-toggle {
+  position: relative; flex: none; display: grid; place-items: center; width: 36px; height: 36px; margin-left: 6px; padding: 0;
+  border: 1px solid var(--hairline); border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer;
+  transition: color .25s, border-color .25s, background-color .25s;
+}
+.theme-toggle[hidden] { display: none; }
+.theme-toggle:hover { color: var(--ink); border-color: var(--hairline-strong); background: rgba(255, 255, 255, .05); }
+.theme-toggle:focus-visible { outline-offset: 3px; border-radius: 50%; }
+.theme-toggle svg { grid-area: 1 / 1; width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; transition: opacity .35s, transform .5s cubic-bezier(.3, .8, .2, 1); }
+.theme-toggle .icon-moon { fill: currentColor; fill-opacity: .14; }
+.theme-toggle .icon-sun { opacity: 0; transform: rotate(-90deg) scale(.6); }
+html[data-theme="day"] .theme-toggle .icon-moon { opacity: 0; transform: rotate(90deg) scale(.6); }
+html[data-theme="day"] .theme-toggle .icon-sun { opacity: 1; transform: none; }
+/* During the switch the whole page is one snapshot, revealed as a circle. */
+html.theme-switching .nav-shell, html.theme-switching .parallax-sky { view-transition-name: none; }
+html.theme-switching::view-transition-old(root), html.theme-switching::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+@media (max-width: 680px) {
+  .nav-shell { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+  .nav-shell nav { grid-column: 1 / -1; grid-row: 2; margin-left: 0; }
+  .theme-toggle { grid-column: 2; grid-row: 1; margin: 0 4px 0 0; width: 34px; height: 34px; }
+}
+
+/* ---------- Day: warm paper under a pale sky ---------- */
+html[data-theme="day"] {
+  --paper: #f4f1ea; --ink: #1c2430; --muted: #5a6572; --accent: #2b5a7d; --line: rgba(28, 40, 56, .12);
+  --moon: #2b5a7d; --star: #9a7430;
+  --surface: rgba(255, 255, 255, .55); --surface-hover: rgba(255, 255, 255, .82);
+  --hairline: rgba(28, 40, 56, .1); --hairline-strong: rgba(28, 40, 56, .2);
+  color-scheme: light; scrollbar-color: #cdc6b8 #f4f1ea;
+}
+html[data-theme="night"] { color-scheme: dark; }
+html[data-theme="day"] body { background: #f4f1ea; color: var(--ink); }
+html[data-theme="day"] ::selection { background: rgba(43, 90, 125, .16); color: var(--ink); }
+html[data-theme="day"] a { text-decoration-color: rgba(43, 90, 125, .32); }
+html[data-theme="day"] a:hover { text-decoration-color: currentColor; }
+html[data-theme="day"] .skip-link { background: #fff; }
+
+/* Sky: daylight wash, a low sun, and a faint star chart where the stars were. */
+html[data-theme="day"] .parallax-sky { background: linear-gradient(180deg, #e7eef3 0%, #eff0ec 34%, #f4f1ea 70%); }
+html[data-theme="day"] .star-tile { display: none; }
+html[data-theme="day"] .parallax-sky::before {
+  background:
+    radial-gradient(38% 30% at 86% 2%, rgba(255, 204, 148, .42), transparent 70%),
+    radial-gradient(34% 28% at 4% 16%, rgba(158, 194, 224, .34), transparent 70%),
+    radial-gradient(42% 30% at 64% 100%, rgba(232, 210, 184, .34), transparent 72%);
+}
+html[data-theme="day"] .parallax-sky::after {
+  top: 0; left: 0; width: auto; height: auto; inset: 0; border-radius: 0; opacity: 1; transform: none; animation: none;
+  background: radial-gradient(circle, rgba(28, 40, 56, .14) 1px, transparent 1.4px) 0 0 / 28px 28px;
+  -webkit-mask: linear-gradient(180deg, #000, rgba(0, 0, 0, .45) 45%, transparent 90%); mask: linear-gradient(180deg, #000, rgba(0, 0, 0, .45) 45%, transparent 90%);
+}
+/* Paper grain darkens instead of glowing. */
+html[data-theme="day"] body::after {
+  opacity: .07; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .1 0 0 0 0 .12 0 0 0 0 .16 0 0 0 .9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+html[data-theme="day"] body::before { background: linear-gradient(#f1f0eb 0, rgba(241, 240, 235, .86) 30%, rgba(241, 240, 235, 0)); }
+
+/* Navigation and controls */
+html[data-theme="day"] .nav-shell { background: rgba(251, 249, 245, .72); box-shadow: 0 10px 30px -24px rgba(28, 40, 56, .45); }
+html[data-theme="day"] .nav-shell.is-scrolled { background: rgba(251, 249, 245, .9); border-color: rgba(28, 40, 56, .12); box-shadow: 0 14px 40px -26px rgba(28, 40, 56, .5); }
+html[data-theme="day"] nav a.active, html[data-theme="day"] .nav-glider { background: rgba(28, 40, 56, .065); box-shadow: inset 0 0 0 1px rgba(28, 40, 56, .05); }
+html[data-theme="day"] nav.has-glider a.active { background: transparent; box-shadow: none; }
+html[data-theme="day"] .theme-toggle:hover { background: rgba(255, 255, 255, .7); }
+html[data-theme="day"] .profile h1 { color: #141b24; }
+html[data-theme="day"] .pill:hover { background: rgba(255, 255, 255, .75); border-color: rgba(28, 40, 56, .32); }
+html[data-theme="day"] .pill--primary { background: #1c2430; color: #f6f3ec; }
+html[data-theme="day"] .pill--primary:hover { background: #0f151d; }
+
+/* Surfaces: paper cards with a soft lift */
+html[data-theme="day"] .card, html[data-theme="day"] .project-row.project-case, html[data-theme="day"] .blog-row,
+html[data-theme="day"] .inner-page .home-block .project-summary, html[data-theme="day"] .about-copy address {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .7), 0 14px 34px -28px rgba(28, 40, 56, .35);
+}
+html[data-theme="day"] .card::before { background: radial-gradient(360px 200px at var(--mx, 80%) var(--my, 0%), rgba(43, 90, 125, .06), transparent 70%); }
+html[data-theme="day"] .card::after, html[data-theme="day"] .blog-row::after, html[data-theme="day"] .project-row.project-case::after {
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgba(43, 90, 125, .42), transparent 65%);
+}
+html[data-theme="day"] .section-heading { background-image: linear-gradient(90deg, rgba(28, 40, 56, .2), rgba(28, 40, 56, .05) 70%, transparent); }
+html[data-theme="day"] .card-index { color: rgba(90, 101, 114, .6); }
+html[data-theme="day"] .tags li, html[data-theme="day"] .project-case .project-side span { color: #6a7583; }
+html[data-theme="day"] .explore-card .explore-meta { color: rgba(90, 101, 114, .8); }
+html[data-theme="day"] .news-list a { text-decoration-color: rgba(28, 40, 56, .22); }
+html[data-theme="day"] .about-photo img { box-shadow: 0 0 0 9px #f4f1ea, 0 0 0 10px var(--hairline-strong); }
+html[data-theme="day"] .read-progress { background: linear-gradient(90deg, rgba(43, 90, 125, .15), var(--moon) 70%, #1c2430); }
+
+/* Particle study and Pearlfin return to their original light palette. */
+html[data-theme="day"] .particle-study { background: linear-gradient(115deg, rgba(255, 255, 255, .8), rgba(251, 249, 243, .62)); border-color: var(--hairline); }
+html[data-theme="day"] .particle-study::before { background: #c8e0e8; opacity: .55; }
+html[data-theme="day"] .fish-intro h2 { color: #2c3c44; }
+html[data-theme="day"] .fish-intro h2 span { color: #2489bd; }
+html[data-theme="day"] .fish-index, html[data-theme="day"] .fish-intro > p:last-child, html[data-theme="day"] .fish-footer > span { color: #6d787c; }
+html[data-theme="day"] .fish-annotations path { stroke: #6b9fb9; opacity: .6; }
+html[data-theme="day"] .fish-annotations circle { fill: #298cc1; }
+html[data-theme="day"] .fish-annotations text { fill: #536b77; }
+html[data-theme="day"] .fish-annotations .fish-note { fill: #7a878b; }
+html[data-theme="day"] .fish-motion { background: rgba(251, 249, 243, .9); border-color: #d9e1df; color: #516c78; }
+html[data-theme="day"] .fish-motion:hover { border-color: #799fac; color: #285d73; }
+html[data-theme="day"] .fish-art canvas { filter: none; }
+html[data-theme="day"] .fish-static { mix-blend-mode: normal; opacity: 1; }
+html[data-theme="day"] .pet-motion, html[data-theme="day"] .pet-hide, html[data-theme="day"] .pet-show { background: #fbf9f4; color: #4b5560; border-color: rgba(28, 40, 56, .15); }
+
+/* Long-form reading surfaces */
+html[data-theme="day"] .equation, html[data-theme="day"] .article-toc, html[data-theme="day"] .math-block,
+html[data-theme="day"] .table-scroll caption, html[data-theme="day"] .table-scroll th, html[data-theme="day"] .latent-prose code,
+html[data-theme="day"] .article-tags li { background: rgba(255, 255, 255, .62); }
+html[data-theme="day"] .math-block { border-left-color: rgba(43, 90, 125, .35); }
+html[data-theme="day"] .latent-prose a { text-decoration-color: rgba(43, 90, 125, .35); }
+
