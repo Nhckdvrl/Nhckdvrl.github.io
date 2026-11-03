@@ -410,3 +410,41 @@ html.is-scrolled body::before { opacity: 1; }
 /* Several papers stack with the same rhythm as other card lists. */
 .paper-list { display: grid; gap: 14px; }
 .inner-page .home-block .project-summary + .project-summary { margin-top: 14px; }
+
+/* News: a quiet dated list on the home page */
+.news-list { list-style: none; margin: 0; padding: 0; }
+.news-list li {
+  display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 24px; align-items: baseline;
+  padding: 15px 0; border-bottom: 1px solid var(--hairline);
+}
+.news-list li:first-child { padding-top: 4px; }
+.news-list time { color: var(--muted); font: 11px/1.6 var(--mono); letter-spacing: .1em; }
+.news-list li:first-child time { color: var(--star); }
+.news-list p { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.7; }
+.news-list a { color: var(--ink); text-decoration-color: rgba(214, 228, 240, .25); }
+.news-list a:hover { text-decoration-color: currentColor; }
+.news-list cite { font-style: normal; }
+
+/* Explore: one card per page */
+.explore-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.explore-card { display: flex; flex-direction: column; gap: 10px; min-height: 196px; }
+.explore-card h3 { font: 400 30px/1.1 var(--display); margin: 0 0 4px; }
+.explore-card h3 .arrow { display: inline-block; margin-left: 10px; font-family: var(--sans); font-size: .55em; color: var(--muted); vertical-align: .18em; transition: transform .3s, color .3s; }
+.explore-card:hover h3 .arrow { transform: translateX(4px); color: var(--ink); }
+.explore-card p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.7; max-width: 420px; }
+.explore-card .explore-meta { margin-top: auto; padding-top: 10px; color: rgba(167, 180, 198, .7); font: 11px/1.6 var(--mono); letter-spacing: .1em; }
+.js-reveal .reveal .card:nth-child(4) { transition-delay: 0s, 0s, .27s, .27s; }
+
+/* About: richer fact rows */
+.about-copy .facts .fact-body { min-width: 0; }
+.about-copy .facts .fact-body .exp-points { margin: 10px 0 2px; font-size: 14px; }
+.about-copy .facts strong { color: var(--ink); font-weight: 600; }
+.about-copy h2 { scroll-margin-top: 96px; }
+.about-cv { margin: 20px 0 0; }
+.about-cv .pill { color: var(--ink); text-decoration: none; }
+
+@media (max-width: 680px) {
+  .news-list li { grid-template-columns: 1fr; gap: 2px; }
+  .explore-grid { grid-template-columns: 1fr; }
+  .explore-card { min-height: 0; }
+}
