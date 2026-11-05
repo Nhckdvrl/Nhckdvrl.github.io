@@ -720,3 +720,68 @@ html[data-theme="day"] .news-list li:first-child::before { background: var(--sta
   .news-list li::before { left: 0; top: 17px; }
   .news-list li:first-child::before { top: 9px; }
 }
+
+/* ---------- Page headers: each page has its own small constellation ---------- */
+.page-hero { position: relative; }
+.page-hero > :not(.page-constellation) { position: relative; z-index: 1; }
+.page-constellation { position: absolute; top: 40px; right: 0; width: 290px; height: 200px; pointer-events: none; overflow: visible; }
+.page-constellation line { stroke: rgba(196, 219, 234, .26); stroke-width: .8; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 0; }
+.page-constellation .star circle { fill: #eef3f8; }
+.page-constellation .star .halo { fill: rgba(196, 219, 234, .12); }
+.page-constellation .star--gold circle:not(.halo) { fill: var(--star); }
+.page-constellation .star--gold .halo { fill: rgba(217, 199, 159, .2); }
+html[data-theme="day"] .page-constellation line { stroke: rgba(28, 40, 56, .24); }
+html[data-theme="day"] .page-constellation .star circle { fill: #1c2430; }
+html[data-theme="day"] .page-constellation .star .halo { fill: rgba(28, 40, 56, .06); }
+html[data-theme="day"] .page-constellation .star--gold circle:not(.halo) { fill: var(--star); }
+@media (prefers-reduced-motion: no-preference) {
+  .page-constellation line { stroke-dashoffset: 1; animation: draw-line 1.3s cubic-bezier(.4, 0, .2, 1) forwards; animation-delay: calc(.35s + var(--i) * .14s); }
+  .page-constellation .star { opacity: 0; animation: star-in .8s ease-out forwards, twinkle-star 6s ease-in-out infinite; animation-delay: calc(.25s + var(--i) * .14s), calc(1.5s + var(--i) * .9s); }
+}
+@media (max-width: 1000px) { .page-constellation { display: none; } }
+
+/* ---------- Research: Abstract and BibTeX drawers ---------- */
+.paper-toggle { cursor: pointer; font: inherit; font-size: 13px; }
+.paper-toggle[aria-expanded="true"] { border-color: var(--hairline-strong); background: rgba(255, 255, 255, .06); color: var(--ink); }
+html[data-theme="day"] .paper-toggle[aria-expanded="true"] { background: rgba(28, 40, 56, .06); }
+.paper-drawer { position: relative; z-index: 1; margin-top: 14px; padding: 18px 20px; border: 1px solid var(--hairline); border-radius: 10px; background: rgba(255, 255, 255, .025); }
+html[data-theme="day"] .paper-drawer { background: rgba(255, 255, 255, .6); }
+.paper-drawer p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.8; max-width: 820px; }
+.paper-drawer--bib pre { margin: 0; overflow-x: auto; }
+.paper-drawer--bib code { font: 12.5px/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: var(--ink); white-space: pre; background: none; }
+.copy-bib {
+  position: absolute; top: 12px; right: 12px; padding: 4px 12px; border: 1px solid var(--hairline-strong); border-radius: 999px;
+  background: transparent; color: var(--muted); font: 500 11px/1.6 var(--label); letter-spacing: .06em; cursor: pointer;
+}
+.copy-bib:hover { color: var(--ink); border-color: rgba(214, 228, 240, .42); }
+@media (prefers-reduced-motion: no-preference) { .paper-drawer:not([hidden]) { animation: drawer-in .35s cubic-bezier(.2, .7, .2, 1); } }
+@keyframes drawer-in { from { opacity: 0; transform: translateY(-4px); } }
+
+/* ---------- Experience: cards on a timeline rail ---------- */
+.rail { position: relative; padding-left: 38px; }
+.rail::before { content: ""; position: absolute; left: 6px; top: 0; bottom: 0; width: 1px; background: linear-gradient(var(--hairline-strong), var(--hairline) 70%, transparent); }
+.rail::after {
+  content: ""; position: absolute; left: 2px; top: 34px; width: 9px; height: 9px; transform: rotate(45deg);
+  background: var(--star); box-shadow: 0 0 0 4px rgba(217, 199, 159, .12), 0 0 14px rgba(217, 199, 159, .45);
+}
+html[data-theme="day"] .rail::after { box-shadow: 0 0 0 4px rgba(154, 116, 48, .12); }
+@media (max-width: 680px) { .rail { padding-left: 24px; } .rail::before { left: 4px; } .rail::after { left: 0; top: 26px; width: 8px; height: 8px; } }
+
+/* ---------- Long article: contents in the left margin, following the reader ---------- */
+.article-toc a.is-current { color: var(--ink); }
+@media (min-width: 1380px) {
+  .latent-article .article-toc {
+    position: fixed; top: 112px; left: calc(50% - 400px - 276px); z-index: 2; width: 236px; max-height: calc(100vh - 150px); overflow: auto;
+    margin: 0; padding: 4px 0 4px 2px; background: none !important; border: 0; border-radius: 0; font-size: 12.5px;
+    scrollbar-width: none; transition: opacity .3s;
+  }
+  .latent-article .article-toc::-webkit-scrollbar { display: none; }
+  .latent-article .article-toc.is-away { opacity: 0; pointer-events: none; }
+  .latent-article .article-toc summary { list-style: none; pointer-events: none; margin-bottom: 10px; color: var(--muted); font: 500 11px/1.6 var(--label); letter-spacing: .1em; text-transform: uppercase; min-height: 0; }
+  .latent-article .article-toc summary::-webkit-details-marker { display: none; }
+  .latent-article .article-toc ol { display: block; margin: 0; padding: 0; list-style: none; }
+  .latent-article .article-toc li { position: relative; padding: 5px 0 5px 14px; line-height: 1.5; border-left: 1px solid var(--hairline); }
+  .latent-article .article-toc a { color: var(--muted); }
+  .latent-article .article-toc a:hover, .latent-article .article-toc a.is-current { color: var(--ink); }
+  .latent-article .article-toc li:has(a.is-current) { border-left-color: var(--star); }
+}
