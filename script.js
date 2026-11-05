@@ -142,6 +142,50 @@
     });
   }
 
+  // Papers: Abstract and BibTeX open one at a time; BibTeX copies with one click.
+  document.querySelectorAll('.paper-toggle').forEach((button) => {
+    const drawer = document.getElementById(button.getAttribute('aria-controls'));
+    if (!drawer) return;
+    button.addEventListener('click', () => {
+      const open = button.getAttribute('aria-expanded') !== 'true';
+      button.closest('.card-actions')?.querySelectorAll('.paper-toggle').forEach((other) => {
+        if (other === button) return;
+        other.setAttribute('aria-expanded', 'false');
+        const otherDrawer = document.getElementById(other.getAttribute('aria-controls'));
+        if (otherDrawer) otherDrawer.hidden = true;
+      });
+      button.setAttribute('aria-expanded', String(open));
+      drawer.hidden = !open;
+    });
+  });
+  document.querySelectorAll('.copy-bib').forEach((button) => {
+    button.addEventListener('click', async () => {
+      const text = button.parentElement.querySelector('code')?.textContent || '';
+      try { await navigator.clipboard.writeText(text); button.textContent = 'Copied'; }
+      catch (error) { button.textContent = 'Select and copy'; }
+      window.setTimeout(() => { button.textContent = 'Copy'; }, 1600);
+    });
+  });
+
+  // Long articles: the margin contents follow the section being read.
+  const tocLinks = [...document.querySelectorAll('.article-toc a[href^="#"]')];
+  if (tocLinks.length && 'IntersectionObserver' in window) {
+    const byId = new Map(tocLinks.map((link) => [link.getAttribute('href').slice(1), link]));
+    const headings = [...byId.keys()].map((id) => document.getElementById(id)).filter(Boolean);
+    const mark = (id) => tocLinks.forEach((link) => link.classList.toggle('is-current', link === byId.get(id)));
+    const spy = new IntersectionObserver((entries) => {
+      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+      if (visible[0]) mark(visible[0].target.id);
+    }, { rootMargin: '-15% 0px -70% 0px' });
+    headings.forEach((heading) => spy.observe(heading));
+    // Step aside when the footer comes into view, so the two never overlap.
+    const toc = document.querySelector('.article-toc');
+    const footer = document.querySelector('.footer');
+    if (toc && footer) {
+      new IntersectionObserver(([entry]) => toc.classList.toggle('is-away', entry.isIntersecting)).observe(footer);
+    }
+  }
+
   // Local time in Nagoya, shown in the footer.
   const clocks = document.querySelectorAll('[data-clock]');
   if (clocks.length) {
