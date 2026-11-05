@@ -850,42 +850,18 @@ html[data-theme="day"] .profile::before { text-shadow: none; }
 @media (min-width: 681px) { .about-photo { position: sticky; top: 112px; align-self: start; } }
 
 /* =====================================================================
-   Editorial layer: fewer boxes. Text-only content sits on hairlines and
-   whitespace like a printed index; only pictures keep a frame.
+   Editorial layer: on Research, Experience, Blog and About, text sits on
+   hairlines and whitespace instead of boxes. Home and Projects keep cards.
    ===================================================================== */
-.explore-card, .interest-list .card, .paper-card--figure, .showcase-card, .org-card,
-.project-grid .card, .blog-row {
+.interest-list .card, .paper-card--figure, .org-card, .blog-row {
   border: 0; border-radius: 0; background: none; box-shadow: none; overflow: visible;
 }
-.explore-card::before, .explore-card::after, .interest-list .card::before, .interest-list .card::after,
-.paper-card--figure::before, .paper-card--figure::after, .showcase-card::before, .showcase-card::after,
-.org-card::before, .org-card::after, .project-grid .card::before, .project-grid .card::after,
-.blog-row::after { display: none; }
-.explore-card:hover, .interest-list .card:hover, .paper-card--figure:hover, .showcase-card:hover,
-.org-card:hover, .project-grid .card:hover, .blog-row:hover { background: none; border-color: transparent; transform: none; }
-html[data-theme="day"] .explore-card, html[data-theme="day"] .interest-list .card, html[data-theme="day"] .paper-card--figure,
-html[data-theme="day"] .showcase-card, html[data-theme="day"] .org-card, html[data-theme="day"] .project-grid .card,
-html[data-theme="day"] .blog-row { box-shadow: none; }
+.interest-list .card::before, .interest-list .card::after, .paper-card--figure::before, .paper-card--figure::after,
+.org-card::before, .org-card::after, .blog-row::after { display: none; }
+.interest-list .card:hover, .paper-card--figure:hover, .org-card:hover, .blog-row:hover { background: none; border-color: transparent; transform: none; }
+html[data-theme="day"] .interest-list .card, html[data-theme="day"] .paper-card--figure,
+html[data-theme="day"] .org-card, html[data-theme="day"] .blog-row { box-shadow: none; }
 
-/* Shared row motion: the title brightens and its arrow steps forward. */
-.index-title { transition: color .25s; }
-.explore-card .arrow, .project-grid .card .arrow, .blog-row h2::after { transition: transform .35s cubic-bezier(.2, .7, .2, 1), color .25s, opacity .25s; }
-
-/* ---- Home: "On this site" becomes a numbered index ---- */
-.explore-grid { display: block; border-bottom: 1px solid var(--hairline); }
-.explore-card, .explore-card:nth-child(n + 4) {
-  display: grid; grid-template-columns: 52px minmax(160px, 220px) minmax(0, 1fr) 190px; align-items: baseline; column-gap: 24px;
-  min-height: 0; padding: 22px 4px; border-top: 1px solid var(--hairline);
-}
-.explore-card .card-index { position: static; grid-column: 1; color: var(--muted); }
-.explore-card h3 { grid-column: 2; margin: 0; font-size: 28px; }
-.explore-card h3 .arrow { opacity: 0; transform: translateX(-6px); }
-.explore-card p { grid-column: 3; margin: 0; max-width: 560px; }
-.explore-card .explore-meta { grid-column: 4; margin: 0; padding: 0; text-align: right; }
-.explore-card:hover h3 a { color: #fff; }
-html[data-theme="day"] .explore-card:hover h3 a { color: #0f151d; }
-.explore-card:hover h3 .arrow { opacity: 1; transform: translateX(0); color: var(--star); }
-.explore-card:hover .card-index { color: var(--star); }
 
 /* ---- Research directions: three columns divided by hairlines ---- */
 .interest-list { gap: 0; border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); }
@@ -907,27 +883,6 @@ html[data-theme="day"] .explore-card:hover h3 a { color: #0f151d; }
 .paper-card--figure h3 { margin-top: 10px; }
 .paper-card--figure .paper-figure img { max-height: 240px; }
 
-/* ---- Projects: pictures keep a frame, text sits below without a box ---- */
-.showcase { column-gap: 32px; row-gap: 52px; }
-.showcase-media { border: 1px solid var(--hairline); border-radius: 12px; }
-.showcase-body { padding: 20px 2px 0; }
-.showcase-body .card-index { top: 22px; right: 2px; }
-.showcase-card:hover .showcase-media { border-color: var(--hairline-strong); }
-.project-grid { display: block; border-bottom: 1px solid var(--hairline); }
-.project-grid .card {
-  display: grid; grid-template-columns: 52px minmax(160px, 260px) minmax(0, 1fr); align-items: baseline; column-gap: 24px;
-  padding: 22px 4px; border-top: 1px solid var(--hairline);
-}
-.project-grid .card .badge { grid-column: 1; grid-row: 1; font-size: 10px; }
-.project-grid .card h3 { grid-column: 2; grid-row: 1; margin: 0; font-size: 26px; }
-.project-grid .card p, .project-grid .card .tags { grid-column: 3; }
-.project-grid .card p { grid-row: 1; margin: 0; }
-.project-grid .card .tags { margin-top: 8px; }
-.project-grid .card:hover h3 a { color: #fff; }
-html[data-theme="day"] .project-grid .card:hover h3 a { color: #0f151d; }
-.project-grid .card:hover .arrow { transform: translate(2px, -2px); color: var(--star); }
-.project-grid .card .badge { writing-mode: horizontal-tb; }
-
 /* ---- Experience: entries on the rail without boxes ---- */
 .org-card { padding: 6px 0 10px; }
 .rail { padding-bottom: 6px; }
@@ -946,11 +901,6 @@ html[data-theme="day"] .blog-row:hover h2 { color: #0f151d; }
 
 /* Responsive */
 @media (max-width: 980px) {
-  .explore-card, .explore-card:nth-child(n + 4) { grid-template-columns: 40px minmax(0, 1fr); row-gap: 6px; }
-  .explore-card h3, .explore-card p, .explore-card .explore-meta { grid-column: 2; }
-  .explore-card .explore-meta { text-align: left; }
-  .project-grid .card { grid-template-columns: minmax(0, 1fr); row-gap: 6px; }
-  .project-grid .card .badge, .project-grid .card h3, .project-grid .card p, .project-grid .card .tags { grid-column: 1; grid-row: auto; }
   .paper-card--figure { grid-template-columns: minmax(0, 1fr); row-gap: 10px; }
   .paper-card--figure > .paper-figure, .paper-card--figure > :not(.paper-figure) { grid-column: 1; grid-row: auto; }
   .paper-card--figure > .paper-figure { margin-bottom: 12px; }
@@ -960,17 +910,9 @@ html[data-theme="day"] .blog-row:hover h2 { color: #0f151d; }
   .interest-list .card + .card { border-left: 0; border-top: 1px solid var(--hairline); }
 }
 @media (max-width: 680px) {
-  .explore-card, .explore-card:nth-child(n + 4) { padding: 18px 2px; }
-  .explore-card h3 .arrow { opacity: 1; transform: none; }
-  .showcase { row-gap: 40px; }
-  .showcase-body { padding: 16px 0 0; }
   .blog-row { padding: 22px 2px; }
 }
 /* The section rule already opens each list, so the first row needs no top line. */
-.explore-card:first-child, .project-grid .card:first-child, .paper-card--figure:first-child { border-top: 0; }
+.paper-card--figure:first-child { border-top: 0; }
 .interest-list { border-top: 0; }
-.explore-card:first-child, .project-grid .card:first-child { padding-top: 6px; }
 .paper-card--figure:first-child { padding-top: 12px; }
-.project-grid .card { grid-template-columns: 120px minmax(160px, 260px) minmax(0, 1fr); }
-.project-grid .card .badge { padding-top: 8px; }
-@media (max-width: 980px) { .project-grid .card { grid-template-columns: minmax(0, 1fr); } .project-grid .card .badge { padding-top: 0; } }
