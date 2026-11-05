@@ -658,3 +658,65 @@ html[data-theme="day"] .org-logo .logo-day { display: block; }
 .eyebrow { letter-spacing: .1em; }
 .tags li { letter-spacing: .01em; font-size: 12px; }
 .paper-figure figcaption { letter-spacing: .01em; font-size: 12px; }
+
+/* ---------- Home hero: a quiet personal constellation ---------- */
+.profile { position: relative; }
+.profile > :not(.constellation) { position: relative; z-index: 1; }
+.constellation { position: absolute; top: -40px; right: -140px; z-index: 0; width: 460px; height: 400px; pointer-events: none; overflow: visible; }
+.constellation line { stroke: rgba(196, 219, 234, .26); stroke-width: .8; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 0; }
+.constellation .orbit-trace { fill: none; stroke: rgba(196, 219, 234, .07); stroke-width: .8; stroke-dasharray: .004 .012; }
+.constellation .star circle { fill: #eef3f8; }
+.constellation .star .halo { fill: rgba(196, 219, 234, .14); }
+.constellation .star:nth-child(3) circle:not(.halo) { fill: var(--star); }
+.constellation .star:nth-child(3) .halo { fill: rgba(217, 199, 159, .2); }
+.constellation text { fill: rgba(167, 180, 198, .7); font: 500 9px/1 var(--label); letter-spacing: .14em; font-feature-settings: "case", "tnum"; }
+html[data-theme="day"] .constellation line { stroke: rgba(28, 40, 56, .24); }
+html[data-theme="day"] .constellation .orbit-trace { stroke: rgba(28, 40, 56, .1); }
+html[data-theme="day"] .constellation .star circle { fill: #1c2430; }
+html[data-theme="day"] .constellation .star .halo { fill: rgba(28, 40, 56, .07); }
+html[data-theme="day"] .constellation .star:nth-child(3) circle:not(.halo) { fill: var(--star); }
+html[data-theme="day"] .constellation text { fill: rgba(90, 101, 114, .8); }
+@media (prefers-reduced-motion: no-preference) {
+  .constellation line { stroke-dashoffset: 1; animation: draw-line 1.4s cubic-bezier(.4, 0, .2, 1) forwards; animation-delay: calc(.45s + var(--i) * .14s); }
+  .constellation .star { opacity: 0; animation: star-in .8s ease-out forwards, twinkle-star 6s ease-in-out infinite; animation-delay: calc(.35s + var(--i) * .14s), calc(1.6s + var(--i) * .9s); }
+  .constellation text { opacity: 0; animation: star-in 1s ease-out 1.6s forwards; }
+}
+@keyframes draw-line { to { stroke-dashoffset: 0; } }
+@keyframes star-in { to { opacity: 1; } }
+@keyframes twinkle-star { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+@media (max-width: 1180px) { .constellation { display: none; } }
+
+/* A horizon between the hero and the particle study */
+.profile::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 22px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--hairline-strong) 30%, var(--hairline-strong) 70%, transparent);
+}
+.profile::before {
+  content: "✦"; position: absolute; left: 50%; bottom: 13px; z-index: 1; transform: translateX(-50%);
+  padding: 0 12px; background: transparent; color: var(--star); font-size: 12px; line-height: 18px;
+  text-shadow: 0 0 12px rgba(217, 199, 159, .55);
+}
+.profile { padding-bottom: 76px; }
+
+/* ---------- Recently: a timeline of small stars ---------- */
+.news-list { position: relative; }
+.news-list::before { content: ""; position: absolute; top: 10px; bottom: 12px; left: 126px; width: 1px; background: linear-gradient(var(--hairline-strong), var(--hairline) 80%, transparent); }
+.news-list li { grid-template-columns: 112px minmax(0, 1fr); gap: 40px; padding: 13px 0; border-bottom: 0; position: relative; }
+.news-list li::before {
+  content: ""; position: absolute; left: 123px; top: 22px; width: 7px; height: 7px; transform: rotate(45deg);
+  background: var(--paper, #0e1623); border: 1px solid var(--hairline-strong);
+}
+.news-list li:first-child::before { top: 13px; background: var(--star); border-color: var(--star); box-shadow: 0 0 0 4px rgba(217, 199, 159, .12), 0 0 14px rgba(217, 199, 159, .5); }
+.news-list li:first-child { padding-top: 4px; }
+html[data-theme="day"] .news-list li::before { background: #f4f1ea; }
+html[data-theme="day"] .news-list li:first-child::before { background: var(--star); box-shadow: 0 0 0 4px rgba(154, 116, 48, .12); }
+@media (prefers-reduced-motion: no-preference) {
+  .news-list li:first-child::before { animation: pulse-star 3.2s ease-in-out infinite; }
+}
+@keyframes pulse-star { 0%, 100% { box-shadow: 0 0 0 4px rgba(217, 199, 159, .12), 0 0 14px rgba(217, 199, 159, .5); } 50% { box-shadow: 0 0 0 6px rgba(217, 199, 159, .05), 0 0 20px rgba(217, 199, 159, .25); } }
+@media (max-width: 680px) {
+  .news-list::before { left: 3px; }
+  .news-list li { grid-template-columns: 1fr; gap: 2px; padding: 11px 0 11px 22px; }
+  .news-list li::before { left: 0; top: 17px; }
+  .news-list li:first-child::before { top: 9px; }
+}
