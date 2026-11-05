@@ -450,7 +450,8 @@ html.is-scrolled body::before { opacity: 1; }
 
 /* Experience page */
 .hero-actions { margin: 24px 0 0; display: flex; gap: 10px; flex-wrap: wrap; }
-.hero-actions .pill { color: var(--ink); text-decoration: none; }
+.hero-actions .pill { text-decoration: none; }
+.hero-actions .pill:not(.pill--primary) { color: var(--ink); }
 .edu-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 .edu-card .exp-date { margin: 0 0 12px; }
 .edu-card h3 { font: 400 26px/1.2 var(--display); margin: 0 0 6px; }
@@ -836,3 +837,14 @@ html[data-theme="day"] .profile::before { text-shadow: none; }
 /* The email is stored reversed so scrapers miss it; this shows it the right way round without script. */
 .mail-text { unicode-bidi: bidi-override; direction: rtl; }
 .mail-text.is-plain { unicode-bidi: normal; direction: ltr; }
+
+/* 404: one star has left its constellation */
+.lost h1 { max-width: 760px; }
+.lost .star--drift { transform-box: fill-box; }
+@media (prefers-reduced-motion: no-preference) {
+  .lost .star--drift { animation: star-in .8s ease-out forwards, drift-away 9s ease-in-out 1.2s infinite alternate; }
+}
+@keyframes drift-away { to { transform: translate(10px, -8px); } }
+
+/* About: the portrait stays beside the text while it scrolls */
+@media (min-width: 681px) { .about-photo { position: sticky; top: 112px; align-self: start; } }
