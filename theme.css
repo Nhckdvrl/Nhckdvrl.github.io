@@ -818,3 +818,7 @@ html[data-theme="day"] .parallax-sky::after {
 
 /* Day keeps to ink and paper: no gold, no glow. */
 html[data-theme="day"] .profile::before { text-shadow: none; }
+
+/* About: email above the postal address */
+.contact-email { margin: 0 0 14px; }
+.contact-email .pill { color: var(--ink); text-decoration: none; }
