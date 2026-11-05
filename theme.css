@@ -506,7 +506,7 @@ html.theme-switching::view-transition-old(root), html.theme-switching::view-tran
 /* ---------- Day: warm paper under a pale sky ---------- */
 html[data-theme="day"] {
   --paper: #f4f1ea; --ink: #1c2430; --muted: #5a6572; --accent: #2b5a7d; --line: rgba(28, 40, 56, .12);
-  --moon: #2b5a7d; --star: #9a7430;
+  --moon: #2b5a7d; --star: #2b5a7d;
   --surface: rgba(255, 255, 255, .55); --surface-hover: rgba(255, 255, 255, .82);
   --hairline: rgba(28, 40, 56, .1); --hairline-strong: rgba(28, 40, 56, .2);
   color-scheme: light; scrollbar-color: #cdc6b8 #f4f1ea;
@@ -709,7 +709,7 @@ html[data-theme="day"] .constellation text { fill: rgba(90, 101, 114, .8); }
 .news-list li:first-child::before { top: 13px; background: var(--star); border-color: var(--star); box-shadow: 0 0 0 4px rgba(217, 199, 159, .12), 0 0 14px rgba(217, 199, 159, .5); }
 .news-list li:first-child { padding-top: 4px; }
 html[data-theme="day"] .news-list li::before { background: #f4f1ea; }
-html[data-theme="day"] .news-list li:first-child::before { background: var(--star); box-shadow: 0 0 0 4px rgba(154, 116, 48, .12); }
+html[data-theme="day"] .news-list li:first-child::before { background: var(--star); box-shadow: 0 0 0 4px rgba(43, 90, 125, .1); animation: none; }
 @media (prefers-reduced-motion: no-preference) {
   .news-list li:first-child::before { animation: pulse-star 3.2s ease-in-out infinite; }
 }
@@ -764,7 +764,7 @@ html[data-theme="day"] .paper-drawer { background: rgba(255, 255, 255, .6); }
   content: ""; position: absolute; left: 2px; top: 34px; width: 9px; height: 9px; transform: rotate(45deg);
   background: var(--star); box-shadow: 0 0 0 4px rgba(217, 199, 159, .12), 0 0 14px rgba(217, 199, 159, .45);
 }
-html[data-theme="day"] .rail::after { box-shadow: 0 0 0 4px rgba(154, 116, 48, .12); }
+html[data-theme="day"] .rail::after { box-shadow: 0 0 0 4px rgba(43, 90, 125, .1); }
 @media (max-width: 680px) { .rail { padding-left: 24px; } .rail::before { left: 4px; } .rail::after { left: 0; top: 26px; width: 8px; height: 8px; } }
 
 /* ---------- Long article: contents in the left margin, following the reader ---------- */
@@ -791,10 +791,11 @@ html[data-theme="day"] .rail::after { box-shadow: 0 0 0 4px rgba(154, 116, 48, .
 .sunpath { display: none; }
 html[data-theme="day"] .constellation, html[data-theme="day"] .page-constellation { display: none; }
 html[data-theme="day"] .sunpath { display: block; position: absolute; top: -40px; right: -140px; z-index: 0; width: 460px; height: 400px; pointer-events: none; overflow: visible; }
-.sunpath .arc { fill: none; stroke: rgba(154, 116, 48, .34); stroke-width: .9; stroke-dasharray: 1; stroke-dashoffset: 0; }
+.sunpath .arc { fill: none; stroke: rgba(43, 90, 125, .26); stroke-width: .9; stroke-dasharray: 1; stroke-dashoffset: 0; }
 .sunpath .hours text, .sunpath .note { fill: rgba(90, 101, 114, .75); font: 500 9px/1 var(--label); letter-spacing: .14em; font-feature-settings: "case", "tnum"; }
-.sunpath .sun circle { fill: #e0a84f; }
-.sunpath .sun .halo { fill: rgba(240, 186, 102, .22); }
+/* By day the sun is drawn in ink, like a figure in a field notebook. */
+.sunpath .sun circle { fill: #f4f1ea; stroke: #2b5a7d; stroke-width: 1.2; }
+.sunpath .sun .halo { fill: rgba(43, 90, 125, .07); stroke: none; }
 @media (prefers-reduced-motion: no-preference) {
   html[data-theme="day"] .sunpath .arc { stroke-dashoffset: 1; animation: draw-line 1.8s cubic-bezier(.4, 0, .2, 1) .3s forwards; }
   html[data-theme="day"] .sunpath .sun .halo { animation: sun-breathe 5s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
@@ -814,3 +815,6 @@ html[data-theme="day"] .parallax-sky::after {
 }
 @keyframes leaf-sway { from { transform: rotate(-1.4deg) translate3d(0, 0, 0); } to { transform: rotate(1.6deg) translate3d(-6px, 4px, 0); } }
 @media (max-width: 680px) { html[data-theme="day"] .parallax-sky::after { width: 120vw; top: -40px; right: -30vw; opacity: .07; } }
+
+/* Day keeps to ink and paper: no gold, no glow. */
+html[data-theme="day"] .profile::before { text-shadow: none; }
