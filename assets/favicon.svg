@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    .bg { fill: #0e1623; } .star { fill: #d9c79f; } .dot { fill: #c4dbea; }
+    @media (prefers-color-scheme: light) { .bg { fill: #f4f1ea; } .star { fill: #2b5a7d; } .dot { fill: #5a6572; } }
+  </style>
+  <rect class="bg" width="64" height="64" rx="14"/>
+  <path class="star" d="M32 12 C33.6 24 40 30.4 52 32 C40 33.6 33.6 40 32 52 C30.4 40 24 33.6 12 32 C24 30.4 30.4 24 32 12 Z"/>
+  <circle class="dot" cx="49" cy="15" r="2.4"/>
+</svg>
