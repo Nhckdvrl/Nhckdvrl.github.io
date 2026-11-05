@@ -806,7 +806,7 @@ html[data-theme="day"] .sunpath { display: block; position: absolute; top: -40px
 html[data-theme="day"] .parallax-sky::after {
   inset: auto; top: -70px; right: -90px; left: auto; width: min(780px, 72vw); height: auto; aspect-ratio: 820 / 760;
   background: url("./assets/day/leaf-shadow.svg") no-repeat right top / contain;
-  -webkit-mask: none; mask: none; opacity: .075; mix-blend-mode: multiply;
+  -webkit-mask: none; mask: none; opacity: .065; mix-blend-mode: multiply;
   transform-origin: 100% 0; transform: none; animation: none;
 }
 @media (prefers-reduced-motion: no-preference) {
