@@ -803,18 +803,29 @@ html[data-theme="day"] .sunpath { display: block; position: absolute; top: -40px
 @keyframes sun-breathe { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.25); opacity: .6; } }
 @media (max-width: 1180px) { html[data-theme="day"] .sunpath { display: none; } }
 
-/* A soft leaf shadow falls across the top of the paper and sways a little. */
+/* Daylight through glass: two soft beams fall across the paper, their edges
+   split into a faint prism fringe, and they drift slowly. */
 html[data-theme="day"] .parallax-sky::after {
-  inset: auto; top: -70px; right: -90px; left: auto; width: min(780px, 72vw); height: auto; aspect-ratio: 820 / 760;
-  background: url("./assets/day/leaf-shadow.svg") no-repeat right top / contain;
-  -webkit-mask: none; mask: none; opacity: .065; mix-blend-mode: multiply;
-  transform-origin: 100% 0; transform: none; animation: none;
+  inset: auto; top: -30vh; right: -8vw; left: auto; width: min(980px, 82vw); height: 160vh; border-radius: 0;
+  background: linear-gradient(90deg,
+    transparent 0,
+    rgba(255, 255, 255, 0) 14%, rgba(255, 255, 255, .78) 24%, rgba(255, 255, 255, .78) 31%,
+    rgba(255, 190, 196, .34) 34%, rgba(255, 228, 168, .34) 37%, rgba(184, 232, 202, .3) 40%,
+    rgba(172, 206, 255, .34) 43%, rgba(212, 186, 255, .24) 46%, transparent 52%,
+    transparent 62%, rgba(255, 255, 255, .5) 68%, rgba(255, 255, 255, .5) 72%,
+    rgba(196, 220, 255, .22) 75%, transparent 80%);
+  filter: blur(16px); -webkit-mask: linear-gradient(180deg, #000 10%, rgba(0, 0, 0, .6) 55%, transparent 85%);
+  mask: linear-gradient(180deg, #000 10%, rgba(0, 0, 0, .6) 55%, transparent 85%);
+  opacity: .85; mix-blend-mode: normal; transform-origin: 50% 0; transform: rotate(28deg); animation: none;
 }
 @media (prefers-reduced-motion: no-preference) {
-  html[data-theme="day"] .parallax-sky::after { animation: leaf-sway 13s ease-in-out infinite alternate; }
+  html[data-theme="day"] .parallax-sky::after { animation: light-drift 16s ease-in-out infinite alternate; }
 }
-@keyframes leaf-sway { from { transform: rotate(-1.4deg) translate3d(0, 0, 0); } to { transform: rotate(1.6deg) translate3d(-6px, 4px, 0); } }
-@media (max-width: 680px) { html[data-theme="day"] .parallax-sky::after { width: 120vw; top: -40px; right: -30vw; opacity: .07; } }
+@keyframes light-drift {
+  from { transform: rotate(28deg) translate3d(0, 0, 0); opacity: .85; }
+  to { transform: rotate(26.5deg) translate3d(-36px, 0, 0); opacity: .6; }
+}
+@media (max-width: 680px) { html[data-theme="day"] .parallax-sky::after { width: 150vw; right: -40vw; } }
 
 /* Day keeps to ink and paper: no gold, no glow. */
 html[data-theme="day"] .profile::before { text-shadow: none; }
