@@ -785,3 +785,32 @@ html[data-theme="day"] .rail::after { box-shadow: 0 0 0 4px rgba(154, 116, 48, .
   .latent-article .article-toc a:hover, .latent-article .article-toc a.is-current { color: var(--ink); }
   .latent-article .article-toc li:has(a.is-current) { border-left-color: var(--star); }
 }
+
+/* ---------- Day: sunlight through leaves instead of stars ---------- */
+/* Constellations belong to the night; by day the hero shows the sun's path over Nagoya. */
+.sunpath { display: none; }
+html[data-theme="day"] .constellation, html[data-theme="day"] .page-constellation { display: none; }
+html[data-theme="day"] .sunpath { display: block; position: absolute; top: -40px; right: -140px; z-index: 0; width: 460px; height: 400px; pointer-events: none; overflow: visible; }
+.sunpath .arc { fill: none; stroke: rgba(154, 116, 48, .34); stroke-width: .9; stroke-dasharray: 1; stroke-dashoffset: 0; }
+.sunpath .hours text, .sunpath .note { fill: rgba(90, 101, 114, .75); font: 500 9px/1 var(--label); letter-spacing: .14em; font-feature-settings: "case", "tnum"; }
+.sunpath .sun circle { fill: #e0a84f; }
+.sunpath .sun .halo { fill: rgba(240, 186, 102, .22); }
+@media (prefers-reduced-motion: no-preference) {
+  html[data-theme="day"] .sunpath .arc { stroke-dashoffset: 1; animation: draw-line 1.8s cubic-bezier(.4, 0, .2, 1) .3s forwards; }
+  html[data-theme="day"] .sunpath .sun .halo { animation: sun-breathe 5s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+}
+@keyframes sun-breathe { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.25); opacity: .6; } }
+@media (max-width: 1180px) { html[data-theme="day"] .sunpath { display: none; } }
+
+/* A soft leaf shadow falls across the top of the paper and sways a little. */
+html[data-theme="day"] .parallax-sky::after {
+  inset: auto; top: -70px; right: -90px; left: auto; width: min(780px, 72vw); height: auto; aspect-ratio: 820 / 760;
+  background: url("./assets/day/leaf-shadow.svg") no-repeat right top / contain;
+  -webkit-mask: none; mask: none; opacity: .075; mix-blend-mode: multiply;
+  transform-origin: 100% 0; transform: none; animation: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html[data-theme="day"] .parallax-sky::after { animation: leaf-sway 13s ease-in-out infinite alternate; }
+}
+@keyframes leaf-sway { from { transform: rotate(-1.4deg) translate3d(0, 0, 0); } to { transform: rotate(1.6deg) translate3d(-6px, 4px, 0); } }
+@media (max-width: 680px) { html[data-theme="day"] .parallax-sky::after { width: 120vw; top: -40px; right: -30vw; opacity: .07; } }

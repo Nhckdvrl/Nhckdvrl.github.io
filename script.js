@@ -194,4 +194,20 @@
     tick();
     window.setInterval(tick, 30000);
   }
+
+  // Day theme: the sun sits on its arc at the current hour in Nagoya (06:00 to 18:00).
+  const sun = document.querySelector('.sunpath .sun');
+  if (sun) {
+    const parts = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Tokyo', hour: 'numeric', minute: 'numeric', hour12: false });
+    const place = () => {
+      const now = Object.fromEntries(parts.formatToParts(new Date()).map((part) => [part.type, part.value]));
+      const hours = (Number(now.hour) % 24) + Number(now.minute) / 60;
+      const t = Math.min(1, Math.max(0, (hours - 6) / 12));
+      const angle = Math.PI * (1 - t);
+      sun.setAttribute('transform', `translate(${(236 + 200 * Math.cos(angle)).toFixed(1)} ${(300 - 280 * Math.sin(angle)).toFixed(1)})`);
+      sun.style.opacity = hours < 6 || hours > 18 ? '.45' : '';
+    };
+    place();
+    window.setInterval(place, 300000);
+  }
 })();
