@@ -822,3 +822,6 @@ html[data-theme="day"] .profile::before { text-shadow: none; }
 /* About: email above the postal address */
 .contact-email { margin: 0 0 14px; }
 .contact-email .pill { color: var(--ink); text-decoration: none; }
+/* The email is stored reversed so scrapers miss it; this shows it the right way round without script. */
+.mail-text { unicode-bidi: bidi-override; direction: rtl; }
+.mail-text.is-plain { unicode-bidi: normal; direction: ltr; }

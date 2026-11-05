@@ -186,6 +186,15 @@
     }
   }
 
+  // Email: assembled here from reversed parts, so the address never sits in the HTML.
+  document.querySelectorAll('[data-mail-user][data-mail-host]').forEach((link) => {
+    const flip = (value) => [...value].reverse().join('');
+    const address = `${flip(link.dataset.mailUser)}@${flip(link.dataset.mailHost)}`;
+    link.href = `mailto:${address}`;
+    const text = link.querySelector('.mail-text');
+    if (text) { text.textContent = address; text.classList.add('is-plain'); }
+  });
+
   // Local time in Nagoya, shown in the footer.
   const clocks = document.querySelectorAll('[data-clock]');
   if (clocks.length) {
